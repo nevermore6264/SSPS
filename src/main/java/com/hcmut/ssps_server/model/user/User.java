@@ -1,4 +1,4 @@
-package com.hcmut.ssps_server.entity;
+package com.hcmut.ssps_server.model.user;
 
 import jakarta.persistence.*;
 import lombok.*;

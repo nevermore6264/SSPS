@@ -1,11 +1,12 @@
-package com.hcmut.ssps_server.service;
+package com.hcmut.ssps_server.service.implement;
 
 import com.hcmut.ssps_server.dto.request.UserCreationRequest;
 import com.hcmut.ssps_server.dto.request.UserUpdateRequest;
 import com.hcmut.ssps_server.dto.response.UserResponse;
-import com.hcmut.ssps_server.entity.User;
+import com.hcmut.ssps_server.model.user.User;
 import com.hcmut.ssps_server.mapper.UserMapper;
 import com.hcmut.ssps_server.repository.UserRepository;
+import com.hcmut.ssps_server.service.interf.IUserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -16,7 +17,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class UserService {
+public class UserService implements IUserService {
     UserRepository userRepository;
     UserMapper userMapper;
 

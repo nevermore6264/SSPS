@@ -3,7 +3,7 @@ package com.hcmut.ssps_server.mapper;
 import com.hcmut.ssps_server.dto.request.UserCreationRequest;
 import com.hcmut.ssps_server.dto.request.UserUpdateRequest;
 import com.hcmut.ssps_server.dto.response.UserResponse;
-import com.hcmut.ssps_server.entity.User;
+import com.hcmut.ssps_server.model.user.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
