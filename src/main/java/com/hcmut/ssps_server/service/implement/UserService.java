@@ -3,6 +3,8 @@ package com.hcmut.ssps_server.service.implement;
 import com.hcmut.ssps_server.dto.request.UserCreationRequest;
 import com.hcmut.ssps_server.dto.request.UserUpdateRequest;
 import com.hcmut.ssps_server.dto.response.UserResponse;
+import com.hcmut.ssps_server.exception.AppException;
+import com.hcmut.ssps_server.exception.ErrorCode;
 import com.hcmut.ssps_server.model.user.User;
 import com.hcmut.ssps_server.mapper.UserMapper;
 import com.hcmut.ssps_server.repository.UserRepository;
@@ -22,12 +24,16 @@ public class UserService implements IUserService {
     UserMapper userMapper;
 
     public User createUser(UserCreationRequest request) {
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
+
         User user = userMapper.toUser(request);
         return userRepository.save(user);
     }
 
     public UserResponse getUser(String userId) {
-        User user = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         return userMapper.toUserResponse(user);
     }
 
