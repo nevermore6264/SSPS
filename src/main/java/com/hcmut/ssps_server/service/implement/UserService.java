@@ -12,6 +12,8 @@ import com.hcmut.ssps_server.service.interf.IUserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,31 +25,41 @@ public class UserService implements IUserService {
     UserRepository userRepository;
     UserMapper userMapper;
 
+    @Override
     public User createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
         User user = userMapper.toUser(request);
+
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(5);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+
         return userRepository.save(user);
     }
 
-    public UserResponse getUser(String userId) {
+    @Override
+    public UserResponse getUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         return userMapper.toUserResponse(user);
     }
 
+    @Override
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
     }
 
-    public UserResponse updateUser(String userId, UserUpdateRequest request) {
+    @Override
+    public UserResponse updateUser(Long userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId).orElse(null);
         userMapper.updateUser(user, request);
         return userMapper.toUserResponse(user);
     }
 
-    public void deleteUser(String userId) {
+    @Override
+    public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
     }
 

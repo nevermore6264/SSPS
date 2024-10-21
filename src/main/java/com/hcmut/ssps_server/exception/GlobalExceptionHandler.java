@@ -15,6 +15,6 @@ public class GlobalExceptionHandler {
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorCode.getMessage());
 
-        return ResponseEntity.body(apiResponse);
+        return ResponseEntity.badRequest().body(apiResponse);
     }
 }

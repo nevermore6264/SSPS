@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface IUserService {
     User createUser(UserCreationRequest request);
-    UserResponse getUser(String userId);
+    UserResponse getUser(Long userId);
     List<UserResponse> getAllUsers();
-    UserResponse updateUser(String userId, UserUpdateRequest request);
-    void deleteUser(String userId);
+    UserResponse updateUser(Long userId, UserUpdateRequest request);
+    void deleteUser(Long userId);
 
 }
