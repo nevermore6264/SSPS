@@ -1,8 +1,12 @@
 package com.hcmut.ssps_server.model.user;
 
+import com.hcmut.ssps_server.model.Document;
+import com.hcmut.ssps_server.model.PrintingLog;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -21,4 +25,8 @@ public class Student {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     User user;
+
+    //History of this student printing
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    private List<PrintingLog> logList;
 }
