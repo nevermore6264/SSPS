@@ -1,4 +1,4 @@
-package com.hcmut.ssps_server.repository;
+package com.hcmut.ssps_server.repository.UserRepository;
 
 import com.hcmut.ssps_server.model.user.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
