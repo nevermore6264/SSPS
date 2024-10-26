@@ -1,5 +1,4 @@
 package com.hcmut.ssps_server.model;
-
 import java.util.List;
 import java.util.Queue;
 import jakarta.persistence.*;

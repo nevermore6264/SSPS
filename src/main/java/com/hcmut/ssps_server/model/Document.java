@@ -1,5 +1,4 @@
 package com.hcmut.ssps_server.model;
-
 import com.hcmut.ssps_server.model.user.Student;
 import jakarta.persistence.*;
 import lombok.*;

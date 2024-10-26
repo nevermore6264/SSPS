@@ -1,24 +1,27 @@
 package com.hcmut.ssps_server.service.implement;
 
 import com.hcmut.ssps_server.dto.request.AuthenticateRequest;
+import com.hcmut.ssps_server.dto.request.IntrospectRequest;
 import com.hcmut.ssps_server.dto.response.AuthenticateResponse;
+import com.hcmut.ssps_server.dto.response.IntrospectResponse;
 import com.hcmut.ssps_server.exception.AppException;
 import com.hcmut.ssps_server.exception.ErrorCode;
 import com.hcmut.ssps_server.model.user.User;
-import com.hcmut.ssps_server.repository.UserRepository;
+import com.hcmut.ssps_server.repository.UserRepository.UserRepository;
 import com.hcmut.ssps_server.service.interf.IAuthenticateService;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -33,6 +36,23 @@ public class AuthenticateService implements IAuthenticateService {
 
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
+
+    @Override
+    public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
+        var token = request.getToken();
+
+        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        var verified = signedJWT.verify(verifier);
+
+        return IntrospectResponse.builder()
+                .valid(verified && expirationTime.after(new Date()))
+                .build();
+    }
 
     @Override
     public AuthenticateResponse authenticate(AuthenticateRequest request) {
@@ -61,7 +81,7 @@ public class AuthenticateService implements IAuthenticateService {
                 .subject(user.getUsername())
                 .issuer("KienLe")
                 .issueTime(new Date())
-                .expirationTime(new Date(Instant.now().plus(2, ChronoUnit.SECONDS).toEpochMilli()))
+                .expirationTime(new Date(Instant.now().plus(2, ChronoUnit.HOURS).toEpochMilli()))
                 .jwtID(UUID.randomUUID().toString())
                 .claim("scope", buildScope(user))
                 .build();
