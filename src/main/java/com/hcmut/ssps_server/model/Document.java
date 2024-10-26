@@ -1,28 +1,36 @@
 package com.hcmut.ssps_server.model;
-
 import com.hcmut.ssps_server.model.user.Student;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "document")
 @Data
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    Long docId;
 
-    private int studentUpload;
+    @Column(nullable = false, unique = true)
+    Long studentUploadID;
 
-    private String fileName;
+    @Column(nullable = false)
+    String fileName;
 
-    private String fileType;
+    @Column(nullable = false)
+    String fileType;
 
-    private double fileSize;
+    @Column(nullable = false)
+    double fileSize;
 
-    private int pageCount;
+    @Column(nullable = false)
+    int pageCount;
+
+    @ManyToOne
+    @JoinColumn(name = "studentUploadID", referencedColumnName = "studentId", insertable = false, updatable = false)
+    Student student;
 }
