@@ -1,10 +1,12 @@
 package com.hcmut.ssps_server.model;
+
 import com.hcmut.ssps_server.model.user.Student;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
+@Table(name = "document")
 @Data
 @Builder
 @NoArgsConstructor
@@ -13,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 public class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long docId;
+    int id;
 
     @Column(nullable = false, unique = true)
     Long studentUploadID;
@@ -27,10 +29,9 @@ public class Document {
     @Column(nullable = false)
     double fileSize;
 
-    @Column(nullable = false)
-    int pageCount;
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] fileData;
 
-    @ManyToOne
-    @JoinColumn(name = "studentUploadID", referencedColumnName = "studentId", insertable = false, updatable = false)
-    Student student;
+    private int pageCount;
 }

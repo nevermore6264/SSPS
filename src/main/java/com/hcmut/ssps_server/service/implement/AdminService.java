@@ -10,8 +10,9 @@ import com.hcmut.ssps_server.mapper.StudentMapper;
 import com.hcmut.ssps_server.mapper.UserMapper;
 import com.hcmut.ssps_server.model.user.Student;
 import com.hcmut.ssps_server.model.user.User;
-import com.hcmut.ssps_server.repository.StudentRepository;
-import com.hcmut.ssps_server.repository.UserRepository;
+
+import com.hcmut.ssps_server.repository.UserRepository.StudentRepository;
+import com.hcmut.ssps_server.repository.UserRepository.UserRepository;
 import com.hcmut.ssps_server.service.interf.IAdminService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
