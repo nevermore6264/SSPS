@@ -26,7 +26,7 @@ public class PrintingLog {
     private int staffPrintID;
 
     @ManyToOne
-    @JoinColumn(name = "printer_id", nullable = false)
+    @JoinColumn(name = "printerid", nullable = false)
     private Printer printer;
 
     @ManyToOne

@@ -1,5 +1,6 @@
 package com.hcmut.ssps_server.model;
 
+import com.hcmut.ssps_server.model.enums.PrinterStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,7 +21,7 @@ public class Printer {
 
     private String printerLocation;
 
-    private boolean printerStatus;
+    private PrinterStatus status;
 
     private int papersLeft;
 

@@ -24,5 +24,9 @@ public class Document {
 
     private double fileSize;
 
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] fileData;
+
     private int pageCount;
 }
