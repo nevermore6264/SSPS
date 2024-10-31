@@ -6,8 +6,11 @@ import com.hcmut.ssps_server.exception.AppException;
 import com.hcmut.ssps_server.exception.ErrorCode;
 import com.hcmut.ssps_server.mapper.StudentMapper;
 import com.hcmut.ssps_server.mapper.UserMapper;
+import com.hcmut.ssps_server.model.Document;
+import com.hcmut.ssps_server.model.enums.PrintableStatus;
 import com.hcmut.ssps_server.model.user.Student;
 import com.hcmut.ssps_server.model.user.User;
+import com.hcmut.ssps_server.repository.DocumentRepository;
 import com.hcmut.ssps_server.repository.UserRepository.StudentRepository;
 import com.hcmut.ssps_server.repository.UserRepository.UserRepository;
 import com.hcmut.ssps_server.service.interf.IStudentService;
@@ -15,10 +18,22 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
 
 @Service
 @RequiredArgsConstructor
@@ -59,4 +74,38 @@ public class StudentService implements IStudentService {
         Student student = studentRepository.findByUser_Username(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         return studentMapper.toStudentResponse(student);
     }
+
+    DocumentRepository documentRepo;
+
+    PrinterService printerService;
+
+    @Override
+    public String uploadDocument(MultipartFile file, int printerId) throws IOException {
+        String fileType = file.getContentType();
+        PrintableStatus printable = printerService.isPrintable(printerId, file);
+
+        if (printable == PrintableStatus.PRINTABLE) {
+            Document document = new Document();
+            document.setFileName(file.getOriginalFilename());
+            document.setFileType(fileType);
+            document.setFileSize(file.getSize());
+            document.setFileData(file.getBytes());
+            document.setPageCount(printerService.caculatePage(fileType, file.getInputStream()));
+
+            documentRepo.save(document);
+            return "Upload success";
+
+        } else if (printable == PrintableStatus.UNSUPPORTED_FILE_TYPE) {
+            return "Printer is not supported";
+
+        } else if (printable == PrintableStatus.PRINTER_NOT_HAVE_ENOUGH_PAPERS) {
+            return "Printer doesn't have enough papers";
+
+        } else {
+            //Nearly not exist this case
+            return "Printer not found";
+        }
+    }
+
+
 }
