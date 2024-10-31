@@ -2,9 +2,11 @@ package com.hcmut.ssps_server.model;
 
 import com.hcmut.ssps_server.model.user.Student;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,25 +16,26 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PrintingLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    int id;
 
     @OneToOne
-    @JoinColumn(name = "document_id", nullable = false, referencedColumnName = "id")
-    private Document document;
+    @JoinColumn(name = "document_id", nullable = false)
+    Document document;
 
-    private int staffPrintID;
+    int staffPrintID;
 
     @ManyToOne
     @JoinColumn(name = "printerid", nullable = false)
-    private Printer printer;
+    Printer printer;
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
-    private Student student;
+    Student student;
 
     @Column(nullable = false)
-    private LocalDateTime time;
+    LocalDateTime time;
 }

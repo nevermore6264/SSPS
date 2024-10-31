@@ -1,4 +1,4 @@
-package com.hcmut.ssps_server.model.enums;
+package com.hcmut.ssps_server.enums;
 
 public enum PrintableStatus {
     PRINTABLE,                      // Tài liệu có thể in

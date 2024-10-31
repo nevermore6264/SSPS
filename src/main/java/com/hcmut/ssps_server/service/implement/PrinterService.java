@@ -2,10 +2,9 @@ package com.hcmut.ssps_server.service.implement;
 
 
 import com.hcmut.ssps_server.model.Printer;
-import com.hcmut.ssps_server.model.enums.PrintableStatus;
+import com.hcmut.ssps_server.enums.PrintableStatus;
 import com.hcmut.ssps_server.repository.PrinterRepository;
 import com.hcmut.ssps_server.service.interf.IPrinterService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

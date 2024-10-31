@@ -7,7 +7,7 @@ import com.hcmut.ssps_server.exception.ErrorCode;
 import com.hcmut.ssps_server.mapper.StudentMapper;
 import com.hcmut.ssps_server.mapper.UserMapper;
 import com.hcmut.ssps_server.model.Document;
-import com.hcmut.ssps_server.model.enums.PrintableStatus;
+import com.hcmut.ssps_server.enums.PrintableStatus;
 import com.hcmut.ssps_server.model.user.Student;
 import com.hcmut.ssps_server.model.user.User;
 import com.hcmut.ssps_server.repository.DocumentRepository;
@@ -18,22 +18,13 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Iterator;
 
 @Service
 @RequiredArgsConstructor

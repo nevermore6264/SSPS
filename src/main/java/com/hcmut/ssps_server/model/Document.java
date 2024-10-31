@@ -2,9 +2,8 @@ package com.hcmut.ssps_server.model;
 
 import com.hcmut.ssps_server.model.user.Student;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "document")
@@ -16,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long docId;
+    int id;
 
     @Column(nullable = false, unique = true)
     Long studentUploadID;
@@ -36,5 +35,3 @@ public class Document {
 
     private int pageCount;
 }
-    @Column(nullable = false)
-    int pageCount;

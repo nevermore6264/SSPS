@@ -1,15 +1,15 @@
 package com.hcmut.ssps_server.model;
 
-import com.hcmut.ssps_server.model.enums.PrinterStatus;
+import com.hcmut.ssps_server.enums.PrinterStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import jakarta.persistence.*;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
