@@ -44,11 +44,6 @@ public class StudentController {
                 .build();
     }
 
-    @GetMapping("/home")
-    public String greet() {
-        return "Hello World";
-    }
-
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<String> uploadDocument(@RequestParam("file") MultipartFile file,
                                               @RequestParam("printerId") int printerId) throws IOException {

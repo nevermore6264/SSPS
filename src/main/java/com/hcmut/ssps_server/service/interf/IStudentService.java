@@ -10,5 +10,5 @@ import java.io.IOException;
 public interface IStudentService {
     Student createStudent(StudentCreationRequest request);
     StudentResponse getMyInfo();
-    public String uploadDocument(MultipartFile file, int printerId) throws IOException;
+    String uploadDocument(MultipartFile file, int printerId) throws IOException;
 }
