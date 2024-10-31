@@ -23,7 +23,7 @@ import lombok.experimental.FieldDefaults;
 public class Printer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long printerID;
+    int printerID;
 
     @Column(nullable = false)
     String printerLocation;

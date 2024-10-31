@@ -23,7 +23,7 @@ public class PrintingLog {
     int id;
 
     @OneToOne
-    @JoinColumn(name = "document_id", nullable = false)
+    @JoinColumn(name = "document_id", nullable = false, referencedColumnName = "id")
     Document document;
 
     int staffPrintID;
