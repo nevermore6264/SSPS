@@ -12,7 +12,7 @@ public class StudentMapper {
         } else {
             StudentResponse.StudentResponseBuilder studentResponse = StudentResponse.builder();
             studentResponse.fullName(student.getUser().getFullName());
-            studentResponse.username(student.getUser().getUsername());
+            studentResponse.email(student.getUser().getEmail());
             studentResponse.studentId(student.getStudentId());
             studentResponse.numOfPages(student.getNumOfPages());
             return studentResponse.build();

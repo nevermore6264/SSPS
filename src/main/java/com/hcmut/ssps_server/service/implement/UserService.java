@@ -27,7 +27,7 @@ public class UserService implements IUserService {
 
     @Override
     public User createUser(UserCreationRequest request) {
-        if (userRepository.existsByUsername(request.getUsername())) {
+        if (userRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 

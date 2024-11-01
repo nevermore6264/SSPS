@@ -38,7 +38,7 @@ public class StudentService implements IStudentService {
 
     @Override
     public Student createStudent(StudentCreationRequest request) {
-        if (userRepository.existsByUsername(request.getUsername())) {
+        if (userRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
@@ -62,7 +62,7 @@ public class StudentService implements IStudentService {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
         log.info("authority: " + context.getAuthentication().getAuthorities());
-        Student student = studentRepository.findByUser_Username(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        Student student = studentRepository.findByUser_Email(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         return studentMapper.toStudentResponse(student);
     }
 

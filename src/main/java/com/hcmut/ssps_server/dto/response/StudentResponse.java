@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StudentResponse {
     Long studentId;
-    String username;
+    String email;
     String fullName;
     Integer numOfPages;
 }

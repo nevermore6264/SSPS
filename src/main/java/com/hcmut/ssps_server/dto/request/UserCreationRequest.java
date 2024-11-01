@@ -8,8 +8,8 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserCreationRequest {
-    @Size(min = 5, message = "USERNAME_INVALID")
-    String username;
+    @Size(min = 5, message = "EMAIL_INVALID")
+    String email;
 
     @Size(min = 8, message = "PASSWORD_INVALID")
     String password;

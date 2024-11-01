@@ -1,7 +1,6 @@
 package com.hcmut.ssps_server.service.implement;
 
 import com.hcmut.ssps_server.dto.request.UserCreationRequest;
-import com.hcmut.ssps_server.dto.request.UserUpdateRequest;
 import com.hcmut.ssps_server.dto.response.StudentResponse;
 import com.hcmut.ssps_server.dto.response.UserResponse;
 import com.hcmut.ssps_server.exception.AppException;
@@ -34,7 +33,7 @@ public class AdminService implements IAdminService {
     StudentMapper studentMapper;
     @Override
     public User createAdmin(UserCreationRequest request) {
-        if (userRepository.existsByUsername(request.getUsername())) {
+        if (userRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
@@ -62,7 +61,7 @@ public class AdminService implements IAdminService {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 
-        User admin = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        User admin = userRepository.findByEmail(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         return userMapper.toUserResponse(admin);
     }
 }
