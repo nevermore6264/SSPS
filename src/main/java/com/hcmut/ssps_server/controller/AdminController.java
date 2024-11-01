@@ -23,7 +23,7 @@ public class AdminController {
     IAdminService adminService;
     IUserService userService;
 
-    @PostMapping
+    @PostMapping("/register")
     ApiResponse<User> createAdmin(@RequestBody @Valid UserCreationRequest request) {
         return ApiResponse.<User>builder()
                 .result(adminService.createAdmin(request))

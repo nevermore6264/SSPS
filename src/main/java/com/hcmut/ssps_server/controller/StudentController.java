@@ -30,7 +30,7 @@ public class StudentController {
 
     IPrinterService printerService;
 
-    @PostMapping
+    @PostMapping("/register")
     public ApiResponse<Student> createStudent(@RequestBody @Valid StudentCreationRequest request) {
         return ApiResponse.<Student>builder()
                 .result(studentService.createStudent(request))
