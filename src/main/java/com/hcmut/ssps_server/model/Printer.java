@@ -29,8 +29,8 @@ public class Printer {
     String printerLocation;
 
     @Column(nullable = false)
-    boolean printerStatus;
-    private PrinterStatus status;
+    @Enumerated(EnumType.STRING)
+    PrinterStatus status;
 
     @Column(nullable = false)
     @Min(0)

@@ -18,9 +18,11 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -82,6 +84,9 @@ public class StudentService implements IStudentService {
             document.setFileSize(file.getSize());
             document.setFileData(file.getBytes());
             document.setPageCount(printerService.caculatePage(fileType, file.getInputStream()));
+
+            var context = SecurityContextHolder.getContext();
+            document.setStudentUploadMail(context.getAuthentication().getName());
 
             documentRepo.save(document);
             return "Upload success";

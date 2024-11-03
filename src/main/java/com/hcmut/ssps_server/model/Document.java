@@ -18,7 +18,7 @@ public class Document {
     int id;
 
     @Column(nullable = false, unique = true)
-    Long studentUploadID;
+    String studentUploadMail;
 
     @Column(nullable = false)
     String fileName;
