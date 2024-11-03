@@ -11,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,9 +20,7 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -51,6 +50,16 @@ public class PrinterService implements IPrinterService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void enqueueStudent(int printerId) {
+        Optional<Printer> printer = printerRepo.findById((long) printerId);
+        var context = SecurityContextHolder.getContext();
+        String mail = context.getAuthentication().getName();
+        Queue<String> studentMailQueue = printer.get().getStudentMailQueue();
+        studentMailQueue.add(mail);
+        printer.get().setStudentMailQueue(studentMailQueue);
     }
 
     public int caculatePage(String fileType, InputStream inputStream) throws IOException {

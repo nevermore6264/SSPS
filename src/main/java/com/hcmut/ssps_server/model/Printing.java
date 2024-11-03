@@ -25,6 +25,9 @@ public class Printing {
     @JoinColumn(name = "document_id", nullable = false)
     Document document;
 
+    @Column(nullable = false, unique = true)
+    String studentUploadMail;
+
     int staffPrintID;
 
     @OneToMany
