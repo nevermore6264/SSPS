@@ -5,4 +5,5 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface IPrinterService {
     PrintableStatus isPrintable(int printerId, MultipartFile file);
+    void enqueueStudent(int printerId);
 }

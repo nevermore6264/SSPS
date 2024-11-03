@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
@@ -40,11 +42,11 @@ public class Printer {
     @ElementCollection
     @CollectionTable(name = "available_doc_types", joinColumns = @JoinColumn(name = "printer_id"))
     @Column(name = "doc_type")
-    List<String> availableDocType;
+    List<String> availableDocType = new ArrayList<>();
 
     // A queue to track student IDs waiting in line, stored as a list or separate table
     @ElementCollection
     @CollectionTable(name = "student_queue", joinColumns = @JoinColumn(name = "printer_id"))
-    @Column(name = "student_id")
-    Queue<Integer> studentIDQueue;
+    @Column(name = "student_mail")
+    Queue<String> studentMailQueue = new LinkedList<>();
 }

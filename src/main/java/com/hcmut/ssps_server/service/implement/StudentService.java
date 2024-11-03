@@ -69,8 +69,8 @@ public class StudentService implements IStudentService {
     }
 
     DocumentRepository documentRepo;
-
     PrinterService printerService;
+    PrintingService printingService;
 
     @Override
     public String uploadDocument(MultipartFile file, int printerId) throws IOException {
@@ -85,10 +85,15 @@ public class StudentService implements IStudentService {
             document.setFileData(file.getBytes());
             document.setPageCount(printerService.caculatePage(fileType, file.getInputStream()));
 
-            var context = SecurityContextHolder.getContext();
-            document.setStudentUploadMail(context.getAuthentication().getName());
-
+            //Save document to database
             documentRepo.save(document);
+
+            //Store Student to Printer queue for printing respectively
+            printerService.enqueueStudent(printerId);
+
+            //Store ALL print request to Printing
+            printingService.createPrintRequest(document);
+
             return "Upload success";
 
         } else if (printable == PrintableStatus.UNSUPPORTED_FILE_TYPE) {

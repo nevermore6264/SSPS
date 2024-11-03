@@ -17,9 +17,6 @@ public class Document {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
 
-    @Column(nullable = false, unique = true)
-    String studentUploadMail;
-
     @Column(nullable = false)
     String fileName;
 

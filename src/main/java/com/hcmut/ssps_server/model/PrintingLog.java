@@ -26,6 +26,9 @@ public class PrintingLog {
     @JoinColumn(name = "document_id", nullable = false, referencedColumnName = "id")
     Document document;
 
+    @Column(nullable = false, unique = true)
+    String studentUploadMail;
+
     int staffPrintID;
 
     @ManyToOne
