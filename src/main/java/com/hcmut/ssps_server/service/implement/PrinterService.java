@@ -40,11 +40,13 @@ public class PrinterService implements IPrinterService {
     public void print(int printerId) {
         List<Printing> printRequests= printingRepository.findByPrinterToPrintID(printerId);
         for (Printing printing : printRequests) {
-            var context = SecurityContextHolder.getContext();
-            printing.setAdminPrintMail(context.getAuthentication().getName());
-            printing.setExpiredTime(LocalDateTime.now().plusHours(2));
-            printingRepository.save(printing);
-            printingLogService.addPrintingLog(printing);
+            if (printing.getExpiredTime() != null) {
+                var context = SecurityContextHolder.getContext();
+                printing.setAdminPrintMail(context.getAuthentication().getName());
+                printing.setExpiredTime(LocalDateTime.now().plusHours(2));
+                printingRepository.save(printing);
+                printingLogService.addPrintingLog(printing);
+            }
         }
     }
 
