@@ -1,6 +1,7 @@
 package com.hcmut.ssps_server.controller;
 
 import com.hcmut.ssps_server.dto.request.StudentCreationRequest;
+import com.hcmut.ssps_server.dto.request.UploadConfigRequest;
 import com.hcmut.ssps_server.dto.response.ApiResponse;
 import com.hcmut.ssps_server.dto.response.StudentResponse;
 import com.hcmut.ssps_server.model.Document;
@@ -46,9 +47,9 @@ public class StudentController {
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<String> uploadDocument(@RequestParam("file") MultipartFile file,
-                                              @RequestParam("printerId") int printerId) throws IOException {
+                                              @RequestParam("uploadConfig") UploadConfigRequest uploadConfig) throws IOException {
         return ApiResponse.<String>builder()
-                .result(studentService.uploadDocument(file,printerId))
+                .result(studentService.uploadDocument(file, uploadConfig))
                 .build();
     }
 }
