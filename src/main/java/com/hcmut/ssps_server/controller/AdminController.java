@@ -7,6 +7,7 @@ import com.hcmut.ssps_server.dto.response.StudentResponse;
 import com.hcmut.ssps_server.dto.response.UserResponse;
 import com.hcmut.ssps_server.model.user.User;
 import com.hcmut.ssps_server.service.interf.IAdminService;
+import com.hcmut.ssps_server.service.interf.IPrinterService;
 import com.hcmut.ssps_server.service.interf.IUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import java.util.List;
 public class AdminController {
     IAdminService adminService;
     IUserService userService;
+    IPrinterService printerService;
 
     @PostMapping("/register")
     ApiResponse<User> createAdmin(@RequestBody @Valid UserCreationRequest request) {
@@ -63,6 +65,14 @@ public class AdminController {
         userService.deleteUser(userId);
         return ApiResponse.<String>builder()
                 .result("User deleted")
+                .build();
+    }
+
+    @GetMapping("/print/{printerId}")
+    ApiResponse<String> print(@PathVariable("printerId") int printerId) {
+        printerService.print(printerId);
+        return ApiResponse.<String>builder()
+                .result("Printer " + printerId + " printed successfully")
                 .build();
     }
 }

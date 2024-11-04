@@ -29,7 +29,7 @@ public class Printing {
     String studentUploadMail;
 
     @Column(nullable = false)
-    int staffPrintID;
+    int adminPrintMail;
 
     @Column(nullable = false)
     int printerToPrintID;

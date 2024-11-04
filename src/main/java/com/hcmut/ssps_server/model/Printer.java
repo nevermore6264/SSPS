@@ -37,7 +37,7 @@ public class Printer {
     int papersLeft;
 
     @Column(nullable = false)
-    int staffInWorkId;
+    int adminPrintMail;
 
     // A list of available document types, stored as a single string líst
     @ElementCollection

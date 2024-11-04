@@ -1,5 +1,7 @@
 package com.hcmut.ssps_server.service.implement;
 
+import com.hcmut.ssps_server.exception.AppException;
+import com.hcmut.ssps_server.exception.ErrorCode;
 import com.hcmut.ssps_server.model.Printing;
 import com.hcmut.ssps_server.model.PrintingLog;
 import com.hcmut.ssps_server.repository.PrintingLogRepository;
@@ -22,9 +24,9 @@ public class PrintingLogService implements IPrintingLogService {
     public void addPrintingLog(Printing printing) {
         PrintingLog printingLog = new PrintingLog();
         printingLog.setDocument(printing.getDocument());
-        printingLog.setStaffPrintID(printing.getStaffPrintID());
+        printingLog.setAdminPrintMail(printing.getAdminPrintMail());
         printingLog.setTime(LocalDateTime.now());
-        printingLog.setStudent(studentRepository.findByUser_Email(printing.getStudentUploadMail()));
+        printingLog.setStudent(studentRepository.findByUser_Email(printing.getStudentUploadMail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
         printingLogRepository.save(printingLog);
     }
 }

@@ -34,8 +34,8 @@ public class PrinterService implements IPrinterService {
 
     PrintingRepository printingRepository;
     PrintingLogService printingLogService;
+    PrinterRepository printerRepo;
 
-    //CHƯA TẠO CONTROLLER => NÊN TẠO STAFF ĐỂ LÀM CONTROLLER
     @Override
     public void print(int printerId) {
         List<Printing> printRequests= printingRepository.findByPrinterToPrintID(printerId);
@@ -46,7 +46,6 @@ public class PrinterService implements IPrinterService {
         }
     }
 
-    PrinterRepository printerRepo;
     @Override
     public PrintableStatus isPrintable(Printer printer, MultipartFile file) throws IOException {
         if (printer == null) {

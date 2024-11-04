@@ -27,7 +27,7 @@ public class PrintingLog {
     Document document;
 
     @Column(nullable = false)
-    int staffPrintID;
+    int adminPrintMail;
 
     @Column(name = "printer_id", nullable = false)
     int printerToPrintID;
@@ -38,8 +38,4 @@ public class PrintingLog {
 
     @Column(nullable = false)
     LocalDateTime time;
-
-    public void setStudent(Optional<Student> byUserEmail) {
-        this.student = byUserEmail.orElse(null);
-    }
 }
