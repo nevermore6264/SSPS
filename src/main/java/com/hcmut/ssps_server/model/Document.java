@@ -24,11 +24,14 @@ public class Document {
     String fileType;
 
     @Column(nullable = false)
-    double fileSize;
+    int pageCount;
 
-    @Lob
-    @Column(columnDefinition = "LONGBLOB")
-    private byte[] fileData;
+    @Column(nullable = false)
+    String paperSize;
 
-    private int pageCount;
+    @Column(nullable = false)
+    String sidedType;
+
+    @Column(nullable = false)
+    int numberOfCopies;
 }
