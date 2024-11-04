@@ -27,7 +27,7 @@ public class PrintingLog {
     Document document;
 
     @Column(nullable = false)
-    int adminPrintMail;
+    String adminPrintMail;
 
     @Column(name = "printer_id", nullable = false)
     int printerToPrintID;
