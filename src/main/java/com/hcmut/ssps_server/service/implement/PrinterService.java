@@ -1,12 +1,16 @@
 package com.hcmut.ssps_server.service.implement;
 
 
+import com.hcmut.ssps_server.exception.AppException;
+import com.hcmut.ssps_server.exception.ErrorCode;
 import com.hcmut.ssps_server.model.Printer;
 import com.hcmut.ssps_server.enums.PrintableStatus;
 import com.hcmut.ssps_server.model.Printing;
+import com.hcmut.ssps_server.model.user.Student;
 import com.hcmut.ssps_server.repository.PrinterRepository;
 import com.hcmut.ssps_server.repository.PrintingLogRepository;
 import com.hcmut.ssps_server.repository.PrintingRepository;
+import com.hcmut.ssps_server.repository.UserRepository.StudentRepository;
 import com.hcmut.ssps_server.service.interf.IPrinterService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +39,7 @@ public class PrinterService implements IPrinterService {
     PrintingRepository printingRepository;
     PrintingLogService printingLogService;
     PrinterRepository printerRepo;
+    StudentRepository studentRepo;
 
     @Override
     public void print(int printerId) {
@@ -46,6 +51,10 @@ public class PrinterService implements IPrinterService {
                 printing.setExpiredTime(LocalDateTime.now().plusHours(2));
                 printingRepository.save(printing);
                 printingLogService.addPrintingLog(printing);
+
+                Student student = studentRepo.findByUser_Email(printing.getStudentUploadMail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+                student.setNumOfPages(student.getNumOfPages() - printing.getDocument().getPageCount());
+                studentRepo.save(student);
             }
         }
     }

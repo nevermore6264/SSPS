@@ -25,7 +25,7 @@ public class PrintingLogService implements IPrintingLogService {
         PrintingLog printingLog = new PrintingLog();
         printingLog.setDocument(printing.getDocument());
         printingLog.setAdminPrintMail(printing.getAdminPrintMail());
-        printingLog.setTime(LocalDateTime.now());
+        printingLog.setPrintingEndTime(LocalDateTime.now());
         printingLog.setStudent(studentRepository.findByUser_Email(printing.getStudentUploadMail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
         printingLogRepository.save(printingLog);
     }
