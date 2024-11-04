@@ -80,14 +80,13 @@ public class StudentService implements IStudentService {
     public String uploadDocument(MultipartFile file, UploadConfigRequest uploadConfig) throws IOException {
         int printerId = uploadConfig.getPrinterId();
         String fileType = file.getContentType();
-        Optional<Printer> printer = printerRepository.findById((long) printerId);
-        PrintableStatus printable = printerService.isPrintable(printer.orElse(null), file);
+        PrintableStatus printable = printerService.isPrintable(file, uploadConfig);
 
         if (printable == PrintableStatus.PRINTABLE) {
             Document document = new Document();
             document.setFileName(file.getOriginalFilename());
             document.setFileType(fileType);
-            document.setPageCount(printerService.caculatePage(fileType, file.getInputStream()));
+            document.setPageCount(printerService.cauclateRequiredPages(file, uploadConfig));
             document.setPaperSize(uploadConfig.getPaperSize());
             document.setSidedType(uploadConfig.getSidedType());
             document.setNumberOfCopies(uploadConfig.getNumberOfCopies());

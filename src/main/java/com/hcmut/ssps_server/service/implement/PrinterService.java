@@ -1,6 +1,9 @@
 package com.hcmut.ssps_server.service.implement;
 
 
+import com.hcmut.ssps_server.dto.request.UploadConfigRequest;
+import com.hcmut.ssps_server.exception.AppException;
+import com.hcmut.ssps_server.exception.ErrorCode;
 import com.hcmut.ssps_server.model.Printer;
 import com.hcmut.ssps_server.enums.PrintableStatus;
 import com.hcmut.ssps_server.model.Printing;
@@ -30,6 +33,7 @@ import java.util.*;
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class PrinterService implements IPrinterService {
+    PrinterRepository printerRepository;
     //Chưa có các trường hợp máy in bị lỗi => tìm print request => notify (STAFF làm) về cho sinh viên, delete trong database
 
     PrintingRepository printingRepository;
@@ -51,7 +55,8 @@ public class PrinterService implements IPrinterService {
     }
 
     @Override
-    public PrintableStatus isPrintable(Printer printer, MultipartFile file) throws IOException {
+    public PrintableStatus isPrintable(MultipartFile file, UploadConfigRequest uploadConfigRequest) throws IOException {
+        Printer printer = printerRepository.findById((long) uploadConfigRequest.getPrinterId()).orElseThrow(() -> new AppException(ErrorCode.PRINTER_NOT_FOUND));
         if (printer == null) {
             return PrintableStatus.PRINTER_NOT_FOUND;
         }
@@ -61,9 +66,10 @@ public class PrinterService implements IPrinterService {
         if(availableDocType.contains(fileType)){
             //CHECK PAPER
             int printerPapers = printer.getPapersLeft();
-            int docRequiredPages = caculatePage(fileType, file.getInputStream());
-            if (printerPapers >= docRequiredPages) {
-                printer.setPapersLeft(printerPapers - docRequiredPages);
+            int docPages = caculatePage(file.getContentType(), file.getInputStream());
+            int requiredPages = cauclateRequiredPages(file, uploadConfigRequest);
+            if (printerPapers >= requiredPages) {
+                printer.setPapersLeft(printerPapers - docPages);
                 printerRepo.save(printer);
                 return PrintableStatus.PRINTABLE;
             } else {
@@ -133,5 +139,19 @@ public class PrinterService implements IPrinterService {
         try (PDDocument document = PDDocument.load(inputStream)) {
             return document.getNumberOfPages();
         }
+    }
+
+    public int cauclateRequiredPages(MultipartFile file, UploadConfigRequest uploadConfigRequest) throws IOException {
+        int docPages = caculatePage(file.getContentType(), file.getInputStream());
+        int changeUpToSidedType = switch (uploadConfigRequest.getSidedType()) {
+            case "double-sided" -> 2;
+            default -> 1;
+        };
+        int changeUptoPaperSize = switch (uploadConfigRequest.getPaperSize()) {
+            case "A3" -> 2;
+            default -> 1;
+        };
+        int numberOfCopies = uploadConfigRequest.getNumberOfCopies();
+        return docPages * changeUptoPaperSize * numberOfCopies / changeUpToSidedType;
     }
 }
