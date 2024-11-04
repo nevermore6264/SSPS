@@ -17,11 +17,19 @@ public class PrintingService implements IPrintingService {
     PrintingRepository printingRepository;
 
     @Override
-    public void createPrintRequest(Document document) {
+    public void addPrintRequest(Document document, int printerId) {
         Printing printing = new Printing();
         printing.setDocument(document);
+        printing.setPrinterToPrintID(printerId);
         var context = SecurityContextHolder.getContext();
         printing.setStudentUploadMail(context.getAuthentication().getName());
         printingRepository.save(printing);
+    }
+
+    //3 TRƯỜNG HỢP: STUDENT CONFIRM RECEIVE DOC hoặc MÁY IN BỊ LỖI NÊN HỦY YÊU CẦU ĐANG TỒN TẠI hoặc TÀI LIỆU HẾT THỜI GIAN TỒN TẠI
+    //VIỆC DELETE PRINT REQUEST SẼ DO STAFF LÀM
+    @Override
+    public void deletePrintRequest(String student_mail) {
+        printingRepository.deleteByStudentUploadMail(student_mail);
     }
 }

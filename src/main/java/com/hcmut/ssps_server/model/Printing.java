@@ -28,14 +28,11 @@ public class Printing {
     @Column(nullable = false, unique = true)
     String studentUploadMail;
 
+    @Column(nullable = false)
     int staffPrintID;
 
-    @OneToMany
-    @JoinTable(name = "printing_printers",
-            joinColumns = @JoinColumn(name = "printing_id"),
-            inverseJoinColumns = @JoinColumn(name = "printer_id")
-    )
-    List<Printer> listPrinters;
+    @Column(nullable = false)
+    int printerToPrintID;
 
     // Expiration time only be allocated when the document was printed
     @Column(nullable = true)

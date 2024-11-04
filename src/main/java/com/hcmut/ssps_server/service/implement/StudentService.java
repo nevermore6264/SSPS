@@ -8,9 +8,11 @@ import com.hcmut.ssps_server.mapper.StudentMapper;
 import com.hcmut.ssps_server.mapper.UserMapper;
 import com.hcmut.ssps_server.model.Document;
 import com.hcmut.ssps_server.enums.PrintableStatus;
+import com.hcmut.ssps_server.model.Printer;
 import com.hcmut.ssps_server.model.user.Student;
 import com.hcmut.ssps_server.model.user.User;
 import com.hcmut.ssps_server.repository.DocumentRepository;
+import com.hcmut.ssps_server.repository.PrinterRepository;
 import com.hcmut.ssps_server.repository.UserRepository.StudentRepository;
 import com.hcmut.ssps_server.repository.UserRepository.UserRepository;
 import com.hcmut.ssps_server.service.interf.IStudentService;
@@ -18,15 +20,14 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +38,10 @@ public class StudentService implements IStudentService {
     UserMapper userMapper;
     StudentMapper studentMapper;
     StudentRepository studentRepository;
+    DocumentRepository documentRepo;
+    PrinterService printerService;
+    PrintingService printingService;
+    PrinterRepository printerRepository;
 
     @Override
     public Student createStudent(StudentCreationRequest request) {
@@ -68,14 +73,13 @@ public class StudentService implements IStudentService {
         return studentMapper.toStudentResponse(student);
     }
 
-    DocumentRepository documentRepo;
-    PrinterService printerService;
-    PrintingService printingService;
+    //CHƯA CÓ CÁC HÀM NHƯ CONFIRM RECEIVE DOC
 
     @Override
     public String uploadDocument(MultipartFile file, int printerId) throws IOException {
         String fileType = file.getContentType();
-        PrintableStatus printable = printerService.isPrintable(printerId, file);
+        Optional<Printer> printer = printerRepository.findById((long) printerId);
+        PrintableStatus printable = printerService.isPrintable(printer.orElse(null), file);
 
         if (printable == PrintableStatus.PRINTABLE) {
             Document document = new Document();
@@ -88,11 +92,8 @@ public class StudentService implements IStudentService {
             //Save document to database
             documentRepo.save(document);
 
-            //Store Student to Printer queue for printing respectively
-            printerService.enqueueStudent(printerId);
-
             //Store ALL print request to Printing
-            printingService.createPrintRequest(document);
+            printingService.addPrintRequest(document, printerId);
 
             return "Upload success";
 
