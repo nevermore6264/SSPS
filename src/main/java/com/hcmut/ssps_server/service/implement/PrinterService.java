@@ -1,6 +1,9 @@
 package com.hcmut.ssps_server.service.implement;
 
 
+import com.hcmut.ssps_server.dto.request.UploadConfigRequest;
+import com.hcmut.ssps_server.exception.AppException;
+import com.hcmut.ssps_server.exception.ErrorCode;
 import com.hcmut.ssps_server.model.Printer;
 import com.hcmut.ssps_server.enums.PrintableStatus;
 import com.hcmut.ssps_server.model.Printing;
@@ -33,8 +36,6 @@ import java.util.*;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class PrinterService implements IPrinterService {
     PrinterRepository printerRepository;
-    //Chưa có các trường hợp máy in bị lỗi => tìm print request => notify (STAFF làm) về cho sinh viên, delete trong database
-
     PrintingRepository printingRepository;
     PrintingLogService printingLogService;
     PrinterRepository printerRepo;
