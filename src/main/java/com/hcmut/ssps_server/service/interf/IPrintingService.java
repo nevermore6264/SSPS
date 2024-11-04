@@ -3,5 +3,6 @@ package com.hcmut.ssps_server.service.interf;
 import com.hcmut.ssps_server.model.Document;
 
 public interface IPrintingService {
-    void createPrintRequest(Document document);
+    void addPrintRequest(Document document, int printerId);
+    void deletePrintRequest(String student_mail);
 }

@@ -8,8 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Table(name = "printingLog")
@@ -26,17 +26,14 @@ public class PrintingLog {
     @JoinColumn(name = "document_id", nullable = false, referencedColumnName = "id")
     Document document;
 
-    @Column(nullable = false, unique = true)
-    String studentUploadMail;
+    @Column(nullable = false)
+    String adminPrintMail;
 
-    int staffPrintID;
-
-    @ManyToOne
-    @JoinColumn(name = "printerid", nullable = false)
-    Printer printer;
+    @Column(name = "printer_id", nullable = false)
+    int printerToPrintID;
 
     @ManyToOne
-    @JoinColumn(name = "student_id", nullable = false)
+    @JoinColumn(name = "student_id", nullable = true)
     Student student;
 
     @Column(nullable = false)

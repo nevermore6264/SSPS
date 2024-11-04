@@ -8,9 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -38,15 +36,12 @@ public class Printer {
     @Min(0)
     int papersLeft;
 
+    @Column(nullable = false)
+    String adminPrintMail;
+
     // A list of available document types, stored as a single string líst
     @ElementCollection
     @CollectionTable(name = "available_doc_types", joinColumns = @JoinColumn(name = "printer_id"))
     @Column(name = "doc_type")
     List<String> availableDocType = new ArrayList<>();
-
-    // A queue to track student IDs waiting in line, stored as a list or separate table
-    @ElementCollection
-    @CollectionTable(name = "student_queue", joinColumns = @JoinColumn(name = "printer_id"))
-    @Column(name = "student_mail")
-    Queue<String> studentMailQueue = new LinkedList<>();
 }
