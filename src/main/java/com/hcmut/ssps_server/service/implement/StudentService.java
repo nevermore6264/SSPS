@@ -103,8 +103,10 @@ public class StudentService implements IStudentService {
             return "Printer is not supported";
 
         } else if (printable == PrintableStatus.PRINTER_NOT_HAVE_ENOUGH_PAPERS) {
-            return "Printer doesn't have enough papers";
+            return "Printer doesn't have enough papers to print this document";
 
+        } else if (printable == PrintableStatus.STUDENT_NOT_HAVE_ENOUGH_PAGES) {
+            return "Student's account doesn't have enough pages to print this document";
         } else {
             //Nearly not exist this case
             return "Printer not found";
