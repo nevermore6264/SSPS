@@ -34,6 +34,9 @@ public class Printing {
     @Column(nullable = false)
     int printerToPrintID;
 
+    @Column(nullable = false)
+    LocalDateTime printingStartTime;
+
     // Expiration time only be allocated when the document was printed
     @Column(nullable = true)
     LocalDateTime expiredTime;

@@ -1,12 +1,17 @@
 package com.hcmut.ssps_server.service.implement;
 
 
+import com.hcmut.ssps_server.dto.request.UploadConfigRequest;
+import com.hcmut.ssps_server.exception.AppException;
+import com.hcmut.ssps_server.exception.ErrorCode;
 import com.hcmut.ssps_server.model.Printer;
 import com.hcmut.ssps_server.enums.PrintableStatus;
 import com.hcmut.ssps_server.model.Printing;
+import com.hcmut.ssps_server.model.user.Student;
 import com.hcmut.ssps_server.repository.PrinterRepository;
 import com.hcmut.ssps_server.repository.PrintingLogRepository;
 import com.hcmut.ssps_server.repository.PrintingRepository;
+import com.hcmut.ssps_server.repository.UserRepository.StudentRepository;
 import com.hcmut.ssps_server.service.interf.IPrinterService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -30,11 +35,11 @@ import java.util.*;
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class PrinterService implements IPrinterService {
-    //Chưa có các trường hợp máy in bị lỗi => tìm print request => notify (STAFF làm) về cho sinh viên, delete trong database
-
+    PrinterRepository printerRepository;
     PrintingRepository printingRepository;
     PrintingLogService printingLogService;
     PrinterRepository printerRepo;
+    StudentRepository studentRepo;
 
     @Override
     public void print(int printerId) {
@@ -46,12 +51,17 @@ public class PrinterService implements IPrinterService {
                 printing.setExpiredTime(LocalDateTime.now().plusHours(2));
                 printingRepository.save(printing);
                 printingLogService.addPrintingLog(printing);
+
+                Student student = studentRepo.findByUser_Email(printing.getStudentUploadMail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+                student.setNumOfPages(student.getNumOfPages() - printing.getDocument().getPageCount());
+                studentRepo.save(student);
             }
         }
     }
 
     @Override
-    public PrintableStatus isPrintable(Printer printer, MultipartFile file) throws IOException {
+    public PrintableStatus isPrintable(MultipartFile file, UploadConfigRequest uploadConfigRequest) throws IOException {
+        Printer printer = printerRepository.findById((long) uploadConfigRequest.getPrinterId()).orElseThrow(() -> new AppException(ErrorCode.PRINTER_NOT_FOUND));
         if (printer == null) {
             return PrintableStatus.PRINTER_NOT_FOUND;
         }
@@ -61,9 +71,10 @@ public class PrinterService implements IPrinterService {
         if(availableDocType.contains(fileType)){
             //CHECK PAPER
             int printerPapers = printer.getPapersLeft();
-            int docRequiredPages = caculatePage(fileType, file.getInputStream());
-            if (printerPapers >= docRequiredPages) {
-                printer.setPapersLeft(printerPapers - docRequiredPages);
+            int docPages = caculatePage(file.getContentType(), file.getInputStream());
+            int requiredPages = cauclateRequiredPages(file, uploadConfigRequest);
+            if (printerPapers >= requiredPages) {
+                printer.setPapersLeft(printerPapers - docPages);
                 printerRepo.save(printer);
                 return PrintableStatus.PRINTABLE;
             } else {
@@ -133,5 +144,19 @@ public class PrinterService implements IPrinterService {
         try (PDDocument document = PDDocument.load(inputStream)) {
             return document.getNumberOfPages();
         }
+    }
+
+    public int cauclateRequiredPages(MultipartFile file, UploadConfigRequest uploadConfigRequest) throws IOException {
+        int docPages = caculatePage(file.getContentType(), file.getInputStream());
+        int changeUpToSidedType = switch (uploadConfigRequest.getSidedType()) {
+            case "double-sided" -> 2;
+            default -> 1;
+        };
+        int changeUptoPaperSize = switch (uploadConfigRequest.getPaperSize()) {
+            case "A3" -> 2;
+            default -> 1;
+        };
+        int numberOfCopies = uploadConfigRequest.getNumberOfCopies();
+        return docPages * changeUptoPaperSize * numberOfCopies / changeUpToSidedType;
     }
 }

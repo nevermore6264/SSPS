@@ -10,6 +10,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -20,6 +22,7 @@ public class PrintingService implements IPrintingService {
     public void addPrintRequest(Document document, int printerId) {
         Printing printing = new Printing();
         printing.setDocument(document);
+        printing.setPrintingStartTime(LocalDateTime.now());
         printing.setPrinterToPrintID(printerId);
         var context = SecurityContextHolder.getContext();
         printing.setStudentUploadMail(context.getAuthentication().getName());

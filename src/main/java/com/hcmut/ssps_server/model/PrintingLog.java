@@ -37,5 +37,8 @@ public class PrintingLog {
     Student student;
 
     @Column(nullable = false)
-    LocalDateTime time;
+    LocalDateTime printingStartTime;
+
+    @Column(nullable = false)
+    LocalDateTime printingEndTime;
 }
