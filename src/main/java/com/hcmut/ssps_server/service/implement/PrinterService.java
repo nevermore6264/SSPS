@@ -52,6 +52,7 @@ public class PrinterService implements IPrinterService {
                 printingRepository.save(printing);
                 printingLogService.addPrintingLog(printing);
 
+                //Minus student's pages
                 Student student = studentRepo.findByUser_Email(printing.getStudentUploadMail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
                 student.setNumOfPages(student.getNumOfPages() - printing.getDocument().getPageCount());
                 studentRepo.save(student);
@@ -73,6 +74,15 @@ public class PrinterService implements IPrinterService {
             int printerPapers = printer.getPapersLeft();
             int docPages = caculatePage(file.getContentType(), file.getInputStream());
             int requiredPages = cauclateRequiredPages(file, uploadConfigRequest);
+
+            //CHECK STUDENT'S PAPERS
+            var context = SecurityContextHolder.getContext();
+            Student student = studentRepo.findByUser_Email(context.getAuthentication().getName()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+            if (student.getNumOfPages() < requiredPages) {
+                return PrintableStatus.STUDENT_NOT_HAVE_ENOUGH_PAGES;
+            }
+
+            //CHECK PRINTER'S PAPERS
             if (printerPapers >= requiredPages) {
                 printer.setPapersLeft(printerPapers - docPages);
                 printerRepo.save(printer);
