@@ -36,9 +36,6 @@ public class Printer {
     @Min(0)
     int papersLeft;
 
-    @Column(nullable = false)
-    String adminPrintMail;
-
     // A list of available document types, stored as a single string líst
     @ElementCollection
     @CollectionTable(name = "available_doc_types", joinColumns = @JoinColumn(name = "printer_id"))
