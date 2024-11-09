@@ -2,6 +2,7 @@ package com.hcmut.ssps_server.service.implement;
 
 
 import com.hcmut.ssps_server.dto.request.UploadConfigRequest;
+import com.hcmut.ssps_server.dto.request.PrinterCreationRequest;
 import com.hcmut.ssps_server.exception.AppException;
 import com.hcmut.ssps_server.exception.ErrorCode;
 import com.hcmut.ssps_server.model.Printer;
@@ -9,7 +10,6 @@ import com.hcmut.ssps_server.enums.PrintableStatus;
 import com.hcmut.ssps_server.model.Printing;
 import com.hcmut.ssps_server.model.user.Student;
 import com.hcmut.ssps_server.repository.PrinterRepository;
-import com.hcmut.ssps_server.repository.PrintingLogRepository;
 import com.hcmut.ssps_server.repository.PrintingRepository;
 import com.hcmut.ssps_server.repository.UserRepository.StudentRepository;
 import com.hcmut.ssps_server.service.interf.IPrinterService;
@@ -35,11 +35,22 @@ import java.util.*;
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class PrinterService implements IPrinterService {
-    PrinterRepository printerRepository;
     PrintingRepository printingRepository;
     PrintingLogService printingLogService;
     PrinterRepository printerRepo;
     StudentRepository studentRepo;
+
+    @Override
+    public Printer addPrinter(PrinterCreationRequest request) {
+        Printer printer = new Printer();
+        printer.setPrinterLocation(request.getPrinterLocation());
+        printer.setStatus(request.getStatus());
+        printer.setPapersLeft(request.getPapersLeft());
+        printer.setAdminPrintMail(request.getAdminPrintMail());
+
+        return printerRepo.save(printer);
+    }
+
 
     @Override
     public void print(int printerId) {
@@ -62,7 +73,7 @@ public class PrinterService implements IPrinterService {
 
     @Override
     public PrintableStatus isPrintable(MultipartFile file, UploadConfigRequest uploadConfigRequest) throws IOException {
-        Printer printer = printerRepository.findById((long) uploadConfigRequest.getPrinterId()).orElseThrow(() -> new AppException(ErrorCode.PRINTER_NOT_FOUND));
+        Printer printer = printerRepo.findById((long) uploadConfigRequest.getPrinterId()).orElseThrow(() -> new AppException(ErrorCode.PRINTER_NOT_FOUND));
         if (printer == null) {
             return PrintableStatus.PRINTER_NOT_FOUND;
         }

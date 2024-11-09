@@ -2,9 +2,11 @@ package com.hcmut.ssps_server.controller;
 
 import com.hcmut.ssps_server.dto.request.UserCreationRequest;
 import com.hcmut.ssps_server.dto.request.UserUpdateRequest;
+import com.hcmut.ssps_server.dto.request.PrinterCreationRequest;
 import com.hcmut.ssps_server.dto.response.ApiResponse;
 import com.hcmut.ssps_server.dto.response.StudentResponse;
 import com.hcmut.ssps_server.dto.response.UserResponse;
+import com.hcmut.ssps_server.model.Printer;
 import com.hcmut.ssps_server.model.user.User;
 import com.hcmut.ssps_server.service.interf.IAdminService;
 import com.hcmut.ssps_server.service.interf.IPrinterService;
@@ -74,5 +76,14 @@ public class AdminController {
         return ApiResponse.<String>builder()
                 .result("Printer " + printerId + " printed successfully")
                 .build();
+
     }
+    @PostMapping("/adds-printer")
+    public ApiResponse<Printer> addPrinter(@RequestBody @Valid PrinterCreationRequest request) {
+        return ApiResponse.<Printer>builder()
+                .result(printerService.addPrinter(request))
+                .build();
+    }
+
+
 }
