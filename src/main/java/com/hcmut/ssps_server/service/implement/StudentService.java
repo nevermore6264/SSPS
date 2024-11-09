@@ -114,4 +114,14 @@ public class StudentService implements IStudentService {
     }
 
 
+    @Override
+    // Method to check remaining pages for the logged-in student
+    public Integer checkRemainingPages() {
+        var context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+        log.info("authority: " + context.getAuthentication().getAuthorities());
+        Student student = studentRepository.findByUser_Email(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return student.getNumOfPages();
+    }
+
 }

@@ -12,4 +12,5 @@ public interface IStudentService {
     Student createStudent(StudentCreationRequest request);
     StudentResponse getMyInfo();
     String uploadDocument(MultipartFile file, UploadConfigRequest uploadConfig) throws IOException;
+    Integer checkRemainingPages() ;
 }
