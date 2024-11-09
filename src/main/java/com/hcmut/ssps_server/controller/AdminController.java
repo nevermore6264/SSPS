@@ -78,12 +78,10 @@ public class AdminController {
                 .build();
 
     }
-    @PostMapping("/adds-printer")
+    @PostMapping("/add-a-printer")
     public ApiResponse<Printer> addPrinter(@RequestBody @Valid PrinterCreationRequest request) {
         return ApiResponse.<Printer>builder()
                 .result(printerService.addPrinter(request))
                 .build();
     }
-
-
 }
