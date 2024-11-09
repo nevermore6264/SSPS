@@ -30,8 +30,4 @@ public class PrintingService implements IPrintingService {
     }
 
     //3 TRƯỜNG HỢP: STUDENT CONFIRM RECEIVE DOC hoặc MÁY IN BỊ LỖI NÊN HỦY YÊU CẦU ĐANG TỒN TẠI hoặc TÀI LIỆU HẾT THỜI GIAN TỒN TẠI
-    @Override
-    public void deletePrintRequest(String student_mail) {
-        printingRepository.deleteByStudentUploadMail(student_mail);
-    }
 }
