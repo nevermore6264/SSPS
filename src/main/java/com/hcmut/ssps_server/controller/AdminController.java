@@ -55,14 +55,14 @@ public class AdminController {
                 .build();
     }
 
-    @PutMapping("/{userId}")
+    @PutMapping("/update-user/{userId}")
     ApiResponse<UserResponse> updateUser(@PathVariable("userId") Long userId, @RequestBody UserUpdateRequest request ) {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.updateUser(userId, request))
                 .build();
     }
 
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/delete-user/{userId}")
     ApiResponse<String> deleteUser(@PathVariable("userId") Long userId) {
         userService.deleteUser(userId);
         return ApiResponse.<String>builder()
