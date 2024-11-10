@@ -19,6 +19,4 @@ public class PrinterCreationRequest {
     @Min(value = 0, message = "Papers left must be at least 0")
     int papersLeft;
 
-    @Size(min = 1, message = "Admin email cannot be empty")
-    String adminPrintMail;
 }

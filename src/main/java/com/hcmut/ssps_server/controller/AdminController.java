@@ -78,10 +78,34 @@ public class AdminController {
                 .build();
 
     }
-    @PostMapping("/add-a-printer")
-    public ApiResponse<Printer> addPrinter(@RequestBody @Valid PrinterCreationRequest request) {
+    @PostMapping("/add-printer")
+    ApiResponse<Printer> addPrinter(@RequestBody @Valid PrinterCreationRequest request) {
         return ApiResponse.<Printer>builder()
                 .result(printerService.addPrinter(request))
+                .build();
+    }
+
+    @DeleteMapping("/delete-printer/{printerId}")
+    ApiResponse<String> deletePrinter(@PathVariable Long printerId) {
+        printerService.deletePrinter(printerId);
+        return ApiResponse.<String>builder()
+                .result("Printer deleted successfully")
+                .build();
+    }
+
+    @PutMapping("/enable-printer/{printerId}")
+    ApiResponse<String> enablePrinter(@PathVariable Long printerId) {
+        printerService.enablePrinter(printerId);
+        return ApiResponse.<String>builder()
+                .result("Printer enabled successfully")
+                .build();
+    }
+
+    @PutMapping("/disable-printer/{printerId}")
+    ApiResponse<String> disablePrinter(@PathVariable Long printerId) {
+        printerService.disablePrinter(printerId);
+        return ApiResponse.<String>builder()
+                .result("Printer disabled successfully")
                 .build();
     }
 }

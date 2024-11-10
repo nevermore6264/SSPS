@@ -10,6 +10,9 @@ import java.io.IOException;
 
 public interface IPrinterService {
     Printer addPrinter(PrinterCreationRequest request);
+    void deletePrinter(Long printerId);
+    void enablePrinter(Long printerId);
+    void disablePrinter(Long printerId);
     void print(int printerId);
     PrintableStatus isPrintable(MultipartFile file, UploadConfigRequest uploadConfigRequest) throws IOException;
 }

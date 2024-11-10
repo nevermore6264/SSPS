@@ -3,6 +3,7 @@ package com.hcmut.ssps_server.service.implement;
 
 import com.hcmut.ssps_server.dto.request.UploadConfigRequest;
 import com.hcmut.ssps_server.dto.request.PrinterCreationRequest;
+import com.hcmut.ssps_server.enums.PrinterStatus;
 import com.hcmut.ssps_server.exception.AppException;
 import com.hcmut.ssps_server.exception.ErrorCode;
 import com.hcmut.ssps_server.model.Printer;
@@ -46,11 +47,33 @@ public class PrinterService implements IPrinterService {
         printer.setPrinterLocation(request.getPrinterLocation());
         printer.setStatus(request.getStatus());
         printer.setPapersLeft(request.getPapersLeft());
-        printer.setAdminPrintMail(request.getAdminPrintMail());
 
         return printerRepo.save(printer);
     }
 
+    @Override
+    public void deletePrinter(Long printerId) {
+        if (!printerRepo.existsById(printerId)) {
+            throw new AppException(ErrorCode.PRINTER_NOT_FOUND);
+        }
+        printerRepo.deleteById(printerId);
+    }
+
+    @Override
+    public void enablePrinter(Long printerId) {
+        Printer printer = printerRepo.findById(printerId)
+                .orElseThrow(() -> new AppException(ErrorCode.PRINTER_NOT_FOUND));
+        printer.setStatus(PrinterStatus.ONLINE);
+        printerRepo.save(printer);
+    }
+
+    @Override
+    public void disablePrinter(Long printerId) {
+        Printer printer = printerRepo.findById(printerId)
+                .orElseThrow(() -> new AppException(ErrorCode.PRINTER_NOT_FOUND));
+        printer.setStatus(PrinterStatus.OFFLINE);
+        printerRepo.save(printer);
+    }
 
     @Override
     public void print(int printerId) {

@@ -4,5 +4,4 @@ import com.hcmut.ssps_server.model.Document;
 
 public interface IPrintingService {
     void addPrintRequest(Document document, int printerId);
-    void deletePrintRequest(String student_mail);
 }
