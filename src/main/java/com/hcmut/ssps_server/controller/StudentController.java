@@ -3,6 +3,7 @@ package com.hcmut.ssps_server.controller;
 import com.hcmut.ssps_server.dto.request.StudentCreationRequest;
 import com.hcmut.ssps_server.dto.request.UploadConfigRequest;
 import com.hcmut.ssps_server.dto.response.ApiResponse;
+import com.hcmut.ssps_server.dto.response.PageResponse;
 import com.hcmut.ssps_server.dto.response.PrintingLogResponse;
 import com.hcmut.ssps_server.dto.response.StudentResponse;
 import com.hcmut.ssps_server.model.Document;
@@ -55,12 +56,16 @@ public class StudentController {
     }
 
     @GetMapping("/remain-pages")
-    public ApiResponse<Integer> getRemainPages() {
-        return ApiResponse.<Integer>builder()
-                .result(studentService.checkRemainingPages())
+    public ApiResponse<PageResponse> getRemainPages() {
+        int remainingPages = studentService.checkRemainingPages();
+        PageResponse pageResponse = PageResponse.builder()
+                .RemainingPages(remainingPages)
+                .build();
+
+        return ApiResponse.<PageResponse>builder()
+                .result(pageResponse)
                 .build();
     }
-
     @PostMapping("/recharge")
     public ApiResponse<Integer> recharge(@RequestParam int amount) {
         int remainingPages = studentService.recharge(amount);
