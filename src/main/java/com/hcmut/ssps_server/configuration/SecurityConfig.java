@@ -51,6 +51,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors().and().authorizeHttpRequests(request ->
                 request.requestMatchers(HttpMethod.POST, "/admin/add-printer").hasAuthority("ROLE_ADMIN")
+                request.requestMatchers(HttpMethod.POST, "/students/recharge").hasAuthority("ROLE_STUDENT")
                         .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET, STUDENT_ENDPOINTS).hasAuthority("ROLE_STUDENT")
                         .requestMatchers(HttpMethod.GET, ADMIN_ENDPOINTS).hasAuthority("ROLE_ADMIN")

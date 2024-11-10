@@ -3,6 +3,7 @@ package com.hcmut.ssps_server.controller;
 import com.hcmut.ssps_server.dto.request.StudentCreationRequest;
 import com.hcmut.ssps_server.dto.request.UploadConfigRequest;
 import com.hcmut.ssps_server.dto.response.ApiResponse;
+import com.hcmut.ssps_server.dto.response.PrintingLogResponse;
 import com.hcmut.ssps_server.dto.response.StudentResponse;
 import com.hcmut.ssps_server.model.Document;
 import com.hcmut.ssps_server.model.Printer;
@@ -50,6 +51,33 @@ public class StudentController {
                                               @RequestParam("uploadConfig") UploadConfigRequest uploadConfig) throws IOException {
         return ApiResponse.<String>builder()
                 .result(studentService.uploadDocument(file, uploadConfig))
+                .build();
+    }
+
+    @GetMapping("/remain-pages")
+    public ApiResponse<Integer> getRemainPages() {
+        return ApiResponse.<Integer>builder()
+                .result(studentService.checkRemainingPages())
+                .build();
+    }
+
+    @PostMapping("/recharge")
+    public ApiResponse<Integer> recharge(@RequestParam int amount) {
+        int remainingPages = studentService.recharge(amount);
+        return ApiResponse.<Integer>builder()
+                .result(remainingPages)
+                .build();
+    }
+    @GetMapping("/print-logs")
+    public ApiResponse<List<PrintingLogResponse>> viewPrintLog() {
+        // Get the logged-in user’s email from SecurityContextHolder
+
+
+        // Fetch the printing logs for the student
+        List<PrintingLogResponse> logs = studentService.getPrintingLogsForStudent();
+
+        return ApiResponse.<List<PrintingLogResponse>>builder()
+                .result(logs)
                 .build();
     }
 }
