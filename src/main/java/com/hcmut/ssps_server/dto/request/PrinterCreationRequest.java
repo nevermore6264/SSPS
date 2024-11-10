@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PrinterCreationRequest {
@@ -19,4 +21,6 @@ public class PrinterCreationRequest {
     @Min(value = 0, message = "Papers left must be at least 0")
     int papersLeft;
 
+    @Size(min = 1, message = "Available document types cannot be empty")
+    List<String> availableDocType;
 }

@@ -47,7 +47,7 @@ public class PrinterService implements IPrinterService {
         printer.setPrinterLocation(request.getPrinterLocation());
         printer.setStatus(request.getStatus());
         printer.setPapersLeft(request.getPapersLeft());
-
+        printer.setAvailableDocType(request.getAvailableDocType());
         return printerRepo.save(printer);
     }
 
