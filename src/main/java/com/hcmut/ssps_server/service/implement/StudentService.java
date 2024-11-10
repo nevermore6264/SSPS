@@ -2,6 +2,7 @@ package com.hcmut.ssps_server.service.implement;
 
 import com.hcmut.ssps_server.dto.request.StudentCreationRequest;
 import com.hcmut.ssps_server.dto.request.UploadConfigRequest;
+import com.hcmut.ssps_server.dto.response.PrintingLogResponse;
 import com.hcmut.ssps_server.dto.response.StudentResponse;
 import com.hcmut.ssps_server.exception.AppException;
 import com.hcmut.ssps_server.exception.ErrorCode;
@@ -29,7 +30,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Optional;
-
+import java.util.List;
+import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -119,9 +121,40 @@ public class StudentService implements IStudentService {
     public Integer checkRemainingPages() {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
-        log.info("authority: " + context.getAuthentication().getAuthorities());
         Student student = studentRepository.findByUser_Email(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         return student.getNumOfPages();
     }
 
+    @Override
+    public Integer recharge(int amount) {
+        var context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+        Student student = studentRepository.findByUser_Email(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        // 3. Quy đổi số tiền thành số trang và cập nhật lại numOfPages
+        int additionalPages = amount / 1000; // 1 trang = 1000 đồng
+        student.setNumOfPages(student.getNumOfPages() + additionalPages);
+
+        // 4. Lưu lại thay đổi trong database
+        studentRepository.save(student);
+
+        // 5. Trả về số trang mới của sinh viên sau khi nạp tiền
+        return student.getNumOfPages();
+    }
+
+    @Override
+    public List<PrintingLogResponse> getPrintingLogsForStudent() {
+        // Retrieve the student based on the email from the context holder
+        var context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+        Student student = studentRepository.findByUser_Email(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        // Convert each PrintingLog to PrintingLogResponse
+        return student.getLogList().stream()
+                .map(log -> new PrintingLogResponse(
+                        log.getPrinterToPrintID(),
+                        log.getDocument().getFileName(),
+                        log.getDocument().getPageCount()))
+                .collect(Collectors.toList());
+
+    }
 }
