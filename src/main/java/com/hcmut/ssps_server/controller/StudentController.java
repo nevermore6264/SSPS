@@ -67,10 +67,14 @@ public class StudentController {
                 .build();
     }
     @PostMapping("/recharge")
-    public ApiResponse<Integer> recharge(@RequestParam int amount) {
+    public ApiResponse<PageResponse> recharge(@RequestParam int amount) {
         int remainingPages = studentService.recharge(amount);
-        return ApiResponse.<Integer>builder()
-                .result(remainingPages)
+        PageResponse pageResponse = PageResponse.builder()
+                .RemainingPages(remainingPages)
+                .build();
+
+        return ApiResponse.<PageResponse>builder()
+                .result(pageResponse)
                 .build();
     }
     @GetMapping("/print-logs")
