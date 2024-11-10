@@ -30,4 +30,3 @@ public class Student {
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<PrintingLog> logList;
 }
-///
