@@ -1,5 +1,6 @@
 package com.hcmut.ssps_server.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hcmut.ssps_server.dto.request.StudentCreationRequest;
 import com.hcmut.ssps_server.dto.request.UploadConfigRequest;
 import com.hcmut.ssps_server.dto.response.ApiResponse;
@@ -30,8 +31,7 @@ import java.util.List;
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class StudentController {
     IStudentService studentService;
-
-    IPrinterService printerService;
+    ObjectMapper objectMapper = new ObjectMapper();
 
     @PostMapping("/register")
     public ApiResponse<Student> createStudent(@RequestBody @Valid StudentCreationRequest request) {
@@ -49,7 +49,8 @@ public class StudentController {
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<String> uploadDocument(@RequestParam("file") MultipartFile file,
-                                              @RequestParam("uploadConfig") UploadConfigRequest uploadConfig) throws IOException {
+                                              @RequestParam("uploadConfig") String uploadConfigJson) throws IOException {
+        UploadConfigRequest uploadConfig = objectMapper.readValue(uploadConfigJson, UploadConfigRequest.class);
         return ApiResponse.<String>builder()
                 .result(studentService.uploadDocument(file, uploadConfig))
                 .build();

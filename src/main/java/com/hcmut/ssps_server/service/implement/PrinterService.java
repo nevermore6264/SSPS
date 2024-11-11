@@ -47,7 +47,7 @@ public class PrinterService implements IPrinterService {
         printer.setPrinterLocation(request.getPrinterLocation());
         printer.setStatus(request.getStatus());
         printer.setPapersLeft(request.getPapersLeft());
-
+        printer.setAvailableDocType(request.getAvailableDocType());
         return printerRepo.save(printer);
     }
 
@@ -193,7 +193,7 @@ public class PrinterService implements IPrinterService {
     public int cauclateRequiredPages(MultipartFile file, UploadConfigRequest uploadConfigRequest) throws IOException {
         int docPages = caculatePage(file.getContentType(), file.getInputStream());
         int changeUpToSidedType = switch (uploadConfigRequest.getSidedType()) {
-            case "double-sided" -> 2;
+            case "double" -> 2;
             default -> 1;
         };
         int changeUptoPaperSize = switch (uploadConfigRequest.getPaperSize()) {
