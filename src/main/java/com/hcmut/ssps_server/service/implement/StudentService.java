@@ -15,9 +15,11 @@ import com.hcmut.ssps_server.model.user.Student;
 import com.hcmut.ssps_server.model.user.User;
 import com.hcmut.ssps_server.repository.DocumentRepository;
 import com.hcmut.ssps_server.repository.PrinterRepository;
+import com.hcmut.ssps_server.repository.PrintingRepository;
 import com.hcmut.ssps_server.repository.UserRepository.StudentRepository;
 import com.hcmut.ssps_server.repository.UserRepository.UserRepository;
 import com.hcmut.ssps_server.service.interf.IStudentService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -45,6 +47,7 @@ public class StudentService implements IStudentService {
     PrinterService printerService;
     PrintingService printingService;
     PrinterRepository printerRepository;
+    PrintingRepository printingRepository;
 
     @Override
     public Student createStudent(StudentCreationRequest request) {
@@ -155,6 +158,13 @@ public class StudentService implements IStudentService {
                         log.getDocument().getFileName(),
                         log.getDocument().getPageCount()))
                 .collect(Collectors.toList());
+    }
 
+    @Override
+    public void confirm(Long printingId) {
+        if (!printingRepository.existsById(printingId)) {
+            throw new EntityNotFoundException("Print request not found");
+        }
+        printingRepository.deleteById(printingId);
     }
 }

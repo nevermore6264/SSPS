@@ -17,4 +17,5 @@ public interface IStudentService {
     Integer checkRemainingPages() ;
     Integer recharge(int amount);
     List<PrintingLogResponse> getPrintingLogsForStudent();
+    void confirm(Long printingId);
 }
