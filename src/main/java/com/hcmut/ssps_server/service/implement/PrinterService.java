@@ -20,6 +20,8 @@ import lombok.experimental.FieldDefaults;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.springframework.data.domain.Pageable;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +31,7 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -49,6 +52,32 @@ public class PrinterService implements IPrinterService {
         printer.setPapersLeft(request.getPapersLeft());
         printer.setAvailableDocType(request.getAvailableDocType());
         return printerRepo.save(printer);
+    }
+    @Override
+    public Printer updatePrinter(Long printerId, Map<String, Object> updates) {
+        Printer printer = printerRepo.findById(printerId)
+                .orElseThrow(() -> new AppException(ErrorCode.PRINTER_NOT_FOUND));
+
+        updates.forEach((key, value) -> {
+            Field field = ReflectionUtils.findField(Printer.class, key);
+            if (field != null) {
+                field.setAccessible(true);
+                ReflectionUtils.setField(field, printer, value);
+            }
+        });
+
+        return printerRepo.save(printer);
+    }
+
+    @Override
+    public Printer getPrinter(Long printerId) {
+        return printerRepo.findById(printerId)
+                .orElseThrow(() -> new AppException(ErrorCode.PRINTER_NOT_FOUND));
+    }
+
+    @Override
+    public List<Printer> getAllPrinters(Pageable pageable) {
+        return printerRepo.findAll(pageable).getContent();
     }
 
     @Override

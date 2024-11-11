@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/admin")
@@ -86,6 +87,28 @@ public class AdminController {
     ApiResponse<Printer> addPrinter(@RequestBody @Valid PrinterCreationRequest request) {
         return ApiResponse.<Printer>builder()
                 .result(printerService.addPrinter(request))
+                .build();
+    }
+
+    @PatchMapping("/update-printer/{printerId}")
+    ApiResponse<Printer> updatePrinter(@PathVariable Long printerId, @RequestBody Map<String, Object> updates) {
+        return ApiResponse.<Printer>builder()
+                .result(printerService.updatePrinter(printerId, updates))
+                .build();
+    }
+
+    @GetMapping("/get-printer/{printerId}")
+    ApiResponse<Printer> getPrinter(@PathVariable Long printerId) {
+        return ApiResponse.<Printer>builder()
+                .result(printerService.getPrinter(printerId))
+                .build();
+    }
+
+    @GetMapping("/get-all-printers")
+    ApiResponse<List<Printer>> getAllPrinters(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "3") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ApiResponse.<List<Printer>>builder()
+                .result(printerService.getAllPrinters(pageable))
                 .build();
     }
 
