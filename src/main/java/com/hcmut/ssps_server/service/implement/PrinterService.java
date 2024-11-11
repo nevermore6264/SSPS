@@ -79,17 +79,12 @@ public class PrinterService implements IPrinterService {
     public void print(int printerId) {
         List<Printing> printRequests= printingRepository.findByPrinterToPrintID(printerId);
         for (Printing printing : printRequests) {
-            if (printing.getExpiredTime() != null) {
+            if (printing.getExpiredTime() == null) {
                 var context = SecurityContextHolder.getContext();
                 printing.setAdminPrintMail(context.getAuthentication().getName());
                 printing.setExpiredTime(LocalDateTime.now().plusHours(2));
                 printingRepository.save(printing);
                 printingLogService.addPrintingLog(printing);
-
-                //Minus student's pages
-                Student student = studentRepo.findByUser_Email(printing.getStudentUploadMail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-                student.setNumOfPages(student.getNumOfPages() - printing.getDocument().getPageCount());
-                studentRepo.save(student);
             }
         }
     }
@@ -118,8 +113,13 @@ public class PrinterService implements IPrinterService {
 
             //CHECK PRINTER'S PAPERS
             if (printerPapers >= requiredPages) {
-                printer.setPapersLeft(printerPapers - docPages);
+                //MINUS PRINTER PAPERS
+                printer.setPapersLeft(printerPapers - requiredPages);
                 printerRepo.save(printer);
+
+                //MINUS STUDENT PAPERS
+                student.setNumOfPages(student.getNumOfPages() - requiredPages);
+                studentRepo.save(student);
                 return PrintableStatus.PRINTABLE;
             } else {
                 //SHOULD ADD AN NOTIFY FUNCTION

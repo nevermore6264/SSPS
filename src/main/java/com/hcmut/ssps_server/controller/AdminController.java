@@ -70,13 +70,12 @@ public class AdminController {
                 .build();
     }
 
-    @GetMapping("/print/{printerId}")
+    @PostMapping("/print/{printerId}")
     ApiResponse<String> print(@PathVariable("printerId") int printerId) {
         printerService.print(printerId);
         return ApiResponse.<String>builder()
                 .result("Printer " + printerId + " printed successfully")
                 .build();
-
     }
     @PostMapping("/add-printer")
     ApiResponse<Printer> addPrinter(@RequestBody @Valid PrinterCreationRequest request) {
