@@ -56,6 +56,10 @@ public class PrinterService implements IPrinterService {
         if (!printerRepo.existsById(printerId)) {
             throw new AppException(ErrorCode.PRINTER_NOT_FOUND);
         }
+        List<Printing> printRequests = printingRepository.findByPrinterToPrintID(printerId.intValue());
+        for (Printing printing : printRequests) {
+            printingRepository.deleteById((long)printing.getId());
+        }
         printerRepo.deleteById(printerId);
     }
 

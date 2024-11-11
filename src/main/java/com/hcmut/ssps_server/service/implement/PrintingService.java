@@ -4,6 +4,7 @@ import com.hcmut.ssps_server.model.Document;
 import com.hcmut.ssps_server.model.Printing;
 import com.hcmut.ssps_server.repository.PrintingRepository;
 import com.hcmut.ssps_server.service.interf.IPrintingService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,4 +31,7 @@ public class PrintingService implements IPrintingService {
     }
 
     //3 TRƯỜNG HỢP: STUDENT CONFIRM RECEIVE DOC hoặc MÁY IN BỊ LỖI NÊN HỦY YÊU CẦU ĐANG TỒN TẠI hoặc TÀI LIỆU HẾT THỜI GIAN TỒN TẠI
+//    public void deletePrintRequest(Long printingId) {
+//
+//    }
 }
