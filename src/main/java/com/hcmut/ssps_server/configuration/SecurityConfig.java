@@ -50,6 +50,7 @@ public class SecurityConfig {
         httpSecurity.cors().and().authorizeHttpRequests(request ->
                 request.requestMatchers(HttpMethod.POST, "/students/recharge").hasAuthority("ROLE_STUDENT")
                         .requestMatchers(HttpMethod.POST, "/admin/add-printer").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/ssps/students/upload").hasAuthority("ROLE_STUDENT")
                         .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET, STUDENT_ENDPOINTS).hasAuthority("ROLE_STUDENT")
                         .requestMatchers(HttpMethod.GET, ADMIN_ENDPOINTS).hasAuthority("ROLE_ADMIN")

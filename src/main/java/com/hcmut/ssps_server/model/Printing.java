@@ -25,10 +25,10 @@ public class Printing {
     @JoinColumn(name = "document_id", nullable = false)
     Document document;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     String studentUploadMail;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     String adminPrintMail;
 
     @Column(nullable = false)

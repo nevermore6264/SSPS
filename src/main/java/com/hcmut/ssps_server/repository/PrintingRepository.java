@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface PrintingRepository extends JpaRepository<Printing, Long> {
     List<Printing> findByPrinterToPrintID(int printerToPrintID);
-    void deleteByStudentUploadMail(String studentMail);
 }
