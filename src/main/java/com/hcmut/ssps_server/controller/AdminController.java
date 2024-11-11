@@ -14,6 +14,9 @@ import com.hcmut.ssps_server.service.interf.IUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,9 +52,10 @@ public class AdminController {
     }
 
     @GetMapping("/get-all-students")
-    ApiResponse<List<StudentResponse>> getAllStudents() {
+    ApiResponse<List<StudentResponse>> getAllStudents(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "3") int size) {
+        Pageable pageable = PageRequest.of(page, size);
         return ApiResponse.<List<StudentResponse>>builder()
-                .result(adminService.getAllStudents())
+                .result(adminService.getAllStudents(pageable))
                 .build();
     }
 
