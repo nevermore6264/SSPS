@@ -16,6 +16,8 @@ import com.hcmut.ssps_server.service.interf.IAdminService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -52,8 +54,10 @@ public class AdminService implements IAdminService {
     }
 
     @Override
-    public List<StudentResponse> getAllStudents() {
-        return studentRepository.findAll().stream().map(studentMapper::toStudentResponse).toList();
+    public List<StudentResponse> getAllStudents(Pageable pageable) {
+        Page<StudentResponse> studentResponsePage = studentRepository.findAllStudents(pageable).map(studentMapper::toStudentResponse);
+        List<StudentResponse> studentResponseList = studentResponsePage.getContent();
+        return studentResponseList;
     }
 
     @Override
