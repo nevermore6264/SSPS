@@ -161,10 +161,13 @@ public class StudentService implements IStudentService {
     }
 
     @Override
-    public void confirm(Long printingId) {
-        if (!printingRepository.existsById(printingId)) {
-            throw new EntityNotFoundException("Print request not found");
+    public String confirm(Long printingId) {
+        try{
+            printingRepository.findById(printingId).orElseThrow(() -> new AppException(ErrorCode.PRINT_REQUEST_NOT_FOUND));
+            printingRepository.deleteById(printingId);
+            return "Receive document successfully";
+        } catch (Exception e){
+            return e.getMessage();
         }
-        printingRepository.deleteById(printingId);
     }
 }

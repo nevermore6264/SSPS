@@ -87,6 +87,11 @@ public class PrinterService implements IPrinterService {
         }
         List<Printing> printRequests = printingRepository.findByPrinterToPrintID(printerId.intValue());
         for (Printing printing : printRequests) {
+            int refundPages = printing.getDocument().getPageCount();
+            //ADD PAGES BACK TO STUDENT
+            Student student = studentRepo.findByUser_Email(printing.getStudentUploadMail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+            student.setNumOfPages(student.getNumOfPages() + refundPages);
+
             printingRepository.deleteById((long)printing.getId());
         }
         printerRepo.deleteById(printerId);
