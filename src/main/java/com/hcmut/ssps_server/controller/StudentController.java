@@ -92,12 +92,10 @@ public class StudentController {
     }
 
     @PostMapping("confirm-receive")
-    public ResponseEntity<String> confirmReceive(@RequestParam Long printingId) {
-        try {
-            studentService.confirm(printingId);
-            return ResponseEntity.ok("Printed document successfully received");
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
-        }
+    public ApiResponse<String> confirmReceive(@RequestParam int printingId) {
+
+        return ApiResponse.<String>builder()
+                .result(studentService.confirm((long) printingId))
+                .build();
     }
 }
