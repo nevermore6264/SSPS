@@ -3,10 +3,12 @@ package com.hcmut.ssps_server.controller;
 import com.hcmut.ssps_server.dto.request.PrinterCreationRequest;
 import com.hcmut.ssps_server.dto.request.UserCreationRequest;
 import com.hcmut.ssps_server.dto.request.UserUpdateRequest;
+import com.hcmut.ssps_server.dto.response.AdminPrintingLogReportResponse;
 import com.hcmut.ssps_server.dto.response.AdminPrintingLogResponse;
 import com.hcmut.ssps_server.dto.response.ApiResponse;
 import com.hcmut.ssps_server.dto.response.StudentResponse;
 import com.hcmut.ssps_server.dto.response.UserResponse;
+import com.hcmut.ssps_server.enums.Frequency;
 import com.hcmut.ssps_server.model.Printer;
 import com.hcmut.ssps_server.model.user.User;
 import com.hcmut.ssps_server.service.interf.IAdminService;
@@ -152,13 +154,14 @@ public class AdminController {
     }
 
     /**
-     * API cho phép SPSO xem toàn bộ nhật ký của các hoạt động in ấn, có thể bao gồm thông tin chi tiết như ngày giờ, số trang in và thông tin người dùng.
+     * API cho phép SPSO xem toàn bộ nhật ký của các hoạt động in ấn, có thể bao gồm thông tin chi tiết như ngày giờ,
+     * số trang in và thông tin người dùng.
      *
      * @param startDate Ngày bắt đầu tìm kiếm
-     * @param endDate Ngày kết thúc tìm kiếm
+     * @param endDate   Ngày kết thúc tìm kiếm
      * @return Danh sách printing_log join với document join printing join student join user
      */
-    @PostMapping("/view-print-logs")
+    @GetMapping("/view-print-logs")
     ApiResponse<List<AdminPrintingLogResponse>> viewAllPrintLog(
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate
@@ -168,12 +171,28 @@ public class AdminController {
                 .build();
     }
 
-    @PostMapping("/view-print-log/{userId}")
+    /**
+     * API cho phép SPSO xem chi tiết nhật ký của các hoạt động in ấn, có thể bao gồm thông tin chi tiết như ngày giờ,
+     * số trang in và thông tin người dùng.
+     *
+     * @param printingLogId Id của bản ghi printing Log Id
+     * @return Thông tin printing_log join với document join printing join student join user
+     */
+    @GetMapping("/view-print-log/{printingLogId}")
     ApiResponse<AdminPrintingLogResponse> viewPrintLog(
-            @RequestParam Long printingLogId
+            @PathVariable Long printingLogId
     ) {
         return ApiResponse.<AdminPrintingLogResponse>builder()
                 .result(printingLogService.viewPrintLog(printingLogId))
+                .build();
+    }
+
+    @GetMapping("/generate-usage-reports")
+    ApiResponse<AdminPrintingLogReportResponse> generateUsageReports(
+            @RequestParam Frequency frequency
+    ) {
+        return ApiResponse.<AdminPrintingLogReportResponse>builder()
+                .result(printingLogService.generateUsageReports(frequency))
                 .build();
     }
 }

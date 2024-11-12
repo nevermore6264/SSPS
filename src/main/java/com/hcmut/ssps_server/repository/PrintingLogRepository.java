@@ -45,13 +45,14 @@ public interface PrintingLogRepository extends JpaRepository<PrintingLog, Long> 
             "LEFT JOIN \n" +
             "    document d ON pl.document_id = d.id\n" +
             "LEFT JOIN \n" +
-            "    printing p ON p.id = pl.id\n" +
+            "    printing p ON p.document_id = d.id\n" +
             "LEFT JOIN \n" +
             "    student s ON pl.student_id = s.student_id\n" +
             "LEFT JOIN \n" +
             "    user u ON s.user_id = u.id\n" +
-            "WHERE (:startDate IS NULL OR p.printing_start_time >= :startDate)\n" +
-            "AND (:endDate IS NULL OR p.printing_start_time <= :endDate)",
+            "WHERE \n" +
+            "    (:startDate IS NULL OR p.printing_start_time >= :startDate) AND\n" +
+            "    (:endDate IS NULL OR p.printing_start_time <= :endDate)",
             nativeQuery = true)
     List<Object[]> viewAllPrintLogRaw(
             @Param("startDate") LocalDate startDate,
@@ -130,7 +131,7 @@ public interface PrintingLogRepository extends JpaRepository<PrintingLog, Long> 
             "LEFT JOIN \n" +
             "    document d ON pl.document_id = d.id\n" +
             "LEFT JOIN \n" +
-            "    printing p ON p.id = pl.id\n" +
+            "    printing p ON p.document_id = d.id\n" +
             "LEFT JOIN \n" +
             "    student s ON pl.student_id = s.student_id\n" +
             "LEFT JOIN \n" +
@@ -177,4 +178,15 @@ public interface PrintingLogRepository extends JpaRepository<PrintingLog, Long> 
         );
         return response;
     }
+
+    @Query(value = "SELECT pl.student_id, d.page_count \n" +
+            "FROM \n" +
+            "    printing_log pl\n" +
+            "LEFT JOIN \n" +
+            "    document d ON pl.document_id = d.id\n" +
+            "LEFT JOIN \n" +
+            "    printing p ON p.document_id = d.id\n" +
+            "WHERE p.printing_start_time BETWEEN :startDate AND :endDate", nativeQuery = true)
+    List<Object[]> findLogsByDateRange(@Param("startDate") LocalDate startDate,
+                                       @Param("endDate") LocalDate endDate);
 }
