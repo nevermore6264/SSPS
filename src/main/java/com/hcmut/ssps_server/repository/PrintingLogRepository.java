@@ -179,14 +179,47 @@ public interface PrintingLogRepository extends JpaRepository<PrintingLog, Long> 
         return response;
     }
 
-    @Query(value = "SELECT pl.student_id, d.page_count \n" +
+    // Count number of users and page counts by month
+    @Query(value = "SELECT YEAR(p.printing_start_time) AS year, " +
+            "MONTH(p.printing_start_time) AS month, " +
+            "COUNT(DISTINCT pl.student_id) AS user_count, " +
+            "SUM(d.page_count) AS total_page_count " +
             "FROM \n" +
             "    printing_log pl\n" +
             "LEFT JOIN \n" +
             "    document d ON pl.document_id = d.id\n" +
             "LEFT JOIN \n" +
             "    printing p ON p.document_id = d.id\n" +
-            "WHERE p.printing_start_time BETWEEN :startDate AND :endDate", nativeQuery = true)
-    List<Object[]> findLogsByDateRange(@Param("startDate") LocalDate startDate,
-                                       @Param("endDate") LocalDate endDate);
+            "GROUP BY YEAR(p.printing_start_time), MONTH(p.printing_start_time)",
+            nativeQuery = true)
+    List<Object[]> countUsersAndPagesByMonth();
+
+    // Count number of users and page counts by quarter
+    @Query(value = "SELECT YEAR(p.printing_start_time) AS year, " +
+            "QUARTER(p.printing_start_time) AS quarter, " +
+            "COUNT(DISTINCT pl.student_id) AS user_count, " +
+            "SUM(d.page_count) AS total_page_count " +
+            "FROM \n" +
+            "    printing_log pl\n" +
+            "LEFT JOIN \n" +
+            "    document d ON pl.document_id = d.id\n" +
+            "LEFT JOIN \n" +
+            "    printing p ON p.document_id = d.id\n" +
+            "GROUP BY YEAR(p.printing_start_time), QUARTER(p.printing_start_time)",
+            nativeQuery = true)
+    List<Object[]> countUsersAndPagesByQuarter();
+
+    // Count number of users and page counts by year
+    @Query(value = "SELECT YEAR(p.printing_start_time) AS year, " +
+            "COUNT(DISTINCT pl.student_id) AS user_count, " +
+            "SUM(d.page_count) AS total_page_count " +
+            "FROM \n" +
+            "    printing_log pl\n" +
+            "LEFT JOIN \n" +
+            "    document d ON pl.document_id = d.id\n" +
+            "LEFT JOIN \n" +
+            "    printing p ON p.document_id = d.id\n" +
+            "GROUP BY YEAR(p.printing_start_time)",
+            nativeQuery = true)
+    List<Object[]> countUsersAndPagesByYear();
 }

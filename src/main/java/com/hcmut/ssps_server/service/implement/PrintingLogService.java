@@ -2,6 +2,7 @@ package com.hcmut.ssps_server.service.implement;
 
 import com.hcmut.ssps_server.dto.response.AdminPrintingLogReportResponse;
 import com.hcmut.ssps_server.dto.response.AdminPrintingLogResponse;
+import com.hcmut.ssps_server.dto.response.ReportItem;
 import com.hcmut.ssps_server.enums.Frequency;
 import com.hcmut.ssps_server.exception.AppException;
 import com.hcmut.ssps_server.exception.ErrorCode;
@@ -15,9 +16,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -66,54 +69,53 @@ public class PrintingLogService implements IPrintingLogService {
 
     @Override
     public AdminPrintingLogReportResponse generateUsageReports(Frequency frequency) {
-        LocalDate startDate;
-        LocalDate endDate = LocalDate.now();
+        List<Object[]> reportData;
 
-        int currentQuarter = (endDate.getMonthValue() - 1) / 3 + 1;  // Define `currentQuarter` here
-
-        // Define start date based on frequency
         switch (frequency) {
             case MONTHLY:
-                startDate = endDate.with(TemporalAdjusters.firstDayOfMonth());
+                reportData = printingLogRepository.countUsersAndPagesByMonth();
                 break;
             case QUARTERLY:
-                startDate = endDate.withMonth((currentQuarter - 1) * 3 + 1)
-                        .with(TemporalAdjusters.firstDayOfMonth());
+                reportData = printingLogRepository.countUsersAndPagesByQuarter();
                 break;
             case YEARLY:
-                startDate = endDate.with(TemporalAdjusters.firstDayOfYear());
+                reportData = printingLogRepository.countUsersAndPagesByYear();
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported frequency: " + frequency);
         }
 
-        // Fetch data within the date range
-        List<Object[]> logs = printingLogRepository.findLogsByDateRange(startDate, endDate);
+        return buildReportResponse(reportData, frequency);
+    }
 
-        // Calculate unique users and total page count
-        Set<Long> uniqueUsers = new HashSet<>();
-        int totalPagesPrinted = 0;
+    private AdminPrintingLogReportResponse buildReportResponse(List<Object[]> reportData, Frequency frequency) {
+        List<ReportItem> items = new ArrayList<>();
 
-        for (Object[] log : logs) {
-            uniqueUsers.add((Long) log[0]); // Assuming log[0] is student_id
-            totalPagesPrinted += (Integer) log[1]; // Assuming log[1] is page_count
+        for (Object[] row : reportData) {
+            ReportItem item = new ReportItem();
+
+            item.setYear(((Number) row[0]).intValue());
+
+            if (frequency == Frequency.MONTHLY) {
+                item.setMonth(((Number) row[1]).intValue());
+                item.setUserCount((Long) row[2]);
+                item.setTotalPageCount(((BigDecimal) row[3]).longValue());
+            } else if (frequency == Frequency.QUARTERLY) {
+                item.setQuarter(((Number) row[1]).intValue());
+                item.setUserCount((Long) row[2]);
+                item.setTotalPageCount(((BigDecimal) row[3]).longValue());
+            } else if (frequency == Frequency.YEARLY) {
+                item.setUserCount((Long) row[1]);
+                item.setTotalPageCount(((BigDecimal) row[2]).longValue());
+            }
+
+            items.add(item);
         }
 
-        // Prepare response
         AdminPrintingLogReportResponse response = new AdminPrintingLogReportResponse();
-        response.setUniqueUserCount(uniqueUsers.size());
-        response.setTotalPagesPrinted(totalPagesPrinted);
         response.setFrequency(frequency);
-
-        // Set the `period` based on frequency
-        String period = switch (frequency) {
-            case MONTHLY -> endDate.getYear() + "-" + endDate.getMonthValue();
-            case QUARTERLY -> "Q" + currentQuarter + "-" + endDate.getYear();
-            case YEARLY -> String.valueOf(endDate.getYear());
-        };
-
-        response.setPeriod(period);
-
+        response.setItems(items);
         return response;
     }
+
 }

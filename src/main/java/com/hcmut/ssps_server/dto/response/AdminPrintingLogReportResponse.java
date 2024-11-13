@@ -6,14 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdminPrintingLogReportResponse {
-    private int uniqueUserCount;
-    private int totalPagesPrinted;
     private Frequency frequency;
-    // E.g., "2024-11" for monthly, "Q4-2024" for quarterly, "2024" for yearly
-    private String period;
+    private List<ReportItem> items;
 }
