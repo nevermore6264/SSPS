@@ -2,6 +2,9 @@ package com.hcmut.ssps_server.repository;
 
 import com.hcmut.ssps_server.dto.response.AdminPrintingLogResponse;
 import com.hcmut.ssps_server.model.PrintingLog;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,57 +18,64 @@ import java.util.List;
 @Repository
 public interface PrintingLogRepository extends JpaRepository<PrintingLog, Long> {
 
-    @Query(value = "SELECT \n" +
-            "    pl.id AS printing_log_id,\n" +
-            "    pl.admin_print_mail,\n" +
-            "    pl.printer_id,\n" +
-            "    pl.printing_end_time,\n" +
-            "    pl.printing_start_time,\n" +
-            "    d.id AS document_id,\n" +
-            "    d.file_name,\n" +
-            "    d.file_type,\n" +
-            "    d.number_of_copies,\n" +
-            "    d.page_count,\n" +
-            "    d.paper_size,\n" +
-            "    d.sided_type,\n" +
-            "    p.id AS printing_id,\n" +
-            "    p.admin_print_mail AS printing_admin_mail,\n" +
-            "    p.expired_time,\n" +
-            "    p.printer_to_printid,\n" +
-            "    p.printing_start_time AS printing_start,\n" +
-            "    p.student_upload_mail,\n" +
-            "    s.student_id,\n" +
-            "    s.num_of_pages,\n" +
-            "    u.id AS user_id,\n" +
-            "    u.email,\n" +
-            "    u.full_name,\n" +
-            "    u.role\n" +
-            "FROM \n" +
-            "    printing_log pl\n" +
-            "LEFT JOIN \n" +
-            "    document d ON pl.document_id = d.id\n" +
-            "LEFT JOIN \n" +
-            "    printing p ON p.document_id = d.id\n" +
-            "LEFT JOIN \n" +
-            "    student s ON pl.student_id = s.student_id\n" +
-            "LEFT JOIN \n" +
-            "    user u ON s.user_id = u.id\n" +
-            "WHERE \n" +
-            "    (:startDate IS NULL OR p.printing_start_time >= :startDate) AND\n" +
+    @Query(value = "SELECT " +
+            "    pl.id AS printing_log_id, " +
+            "    pl.admin_print_mail, " +
+            "    pl.printer_id, " +
+            "    pl.printing_end_time, " +
+            "    pl.printing_start_time, " +
+            "    d.id AS document_id, " +
+            "    d.file_name, " +
+            "    d.file_type, " +
+            "    d.number_of_copies, " +
+            "    d.page_count, " +
+            "    d.paper_size, " +
+            "    d.sided_type, " +
+            "    p.id AS printing_id, " +
+            "    p.admin_print_mail AS printing_admin_mail, " +
+            "    p.expired_time, " +
+            "    p.printer_to_printid, " +
+            "    p.printing_start_time AS printing_start, " +
+            "    p.student_upload_mail, " +
+            "    s.student_id, " +
+            "    s.num_of_pages, " +
+            "    u.id AS user_id, " +
+            "    u.email, " +
+            "    u.full_name, " +
+            "    u.role " +
+            "FROM " +
+            "    printing_log pl " +
+            "LEFT JOIN " +
+            "    document d ON pl.document_id = d.id " +
+            "LEFT JOIN " +
+            "    printing p ON p.document_id = d.id " +
+            "LEFT JOIN " +
+            "    student s ON pl.student_id = s.student_id " +
+            "LEFT JOIN " +
+            "    user u ON s.user_id = u.id " +
+            "WHERE " +
+            "    (:startDate IS NULL OR p.printing_start_time >= :startDate) AND " +
             "    (:endDate IS NULL OR p.printing_start_time <= :endDate)",
+            countQuery = "SELECT COUNT(pl.id) " +
+                    "FROM printing_log pl " +
+                    "LEFT JOIN document d ON pl.document_id = d.id " +
+                    "LEFT JOIN printing p ON p.document_id = d.id " +
+                    "LEFT JOIN student s ON pl.student_id = s.student_id " +
+                    "LEFT JOIN user u ON s.user_id = u.id " +
+                    "WHERE (:startDate IS NULL OR p.printing_start_time >= :startDate) " +
+                    "AND (:endDate IS NULL OR p.printing_start_time <= :endDate)",
             nativeQuery = true)
-    List<Object[]> viewAllPrintLogRaw(
+    Page<Object[]> viewAllPrintLogRaw(
             @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate
+            @Param("endDate") LocalDate endDate,
+            Pageable pageable
     );
 
-    default List<AdminPrintingLogResponse> viewAllPrintLog(
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate
-    ) {
-        List<Object[]> rawData = viewAllPrintLogRaw(startDate, endDate);
+    default Page<AdminPrintingLogResponse> viewAllPrintLog(LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        Page<Object[]> rawData = viewAllPrintLogRaw(startDate, endDate, pageable);
         List<AdminPrintingLogResponse> adminPrintingLogResponses = new ArrayList<>();
-        for (Object[] row : rawData) {
+
+        for (Object[] row : rawData.getContent()) {
             Long printingLogId = ((Number) row[0]).longValue();
             String adminPrintMail = (String) row[1];
             Integer printerId = ((Number) row[2]).intValue();
@@ -98,7 +108,8 @@ public interface PrintingLogRepository extends JpaRepository<PrintingLog, Long> 
             );
             adminPrintingLogResponses.add(response);
         }
-        return adminPrintingLogResponses;
+
+        return new PageImpl<>(adminPrintingLogResponses, pageable, rawData.getTotalElements());
     }
 
     @Query(value = "SELECT \n" +

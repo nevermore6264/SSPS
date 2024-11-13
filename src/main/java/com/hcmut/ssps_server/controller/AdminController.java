@@ -18,6 +18,7 @@ import com.hcmut.ssps_server.service.interf.IUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -162,12 +163,15 @@ public class AdminController {
      * @return Danh sách printing_log join với document join printing join student join user
      */
     @GetMapping("/view-print-logs")
-    ApiResponse<List<AdminPrintingLogResponse>> viewAllPrintLog(
+    ApiResponse<Page<AdminPrintingLogResponse>> viewAllPrintLog(
             @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size
     ) {
-        return ApiResponse.<List<AdminPrintingLogResponse>>builder()
-                .result(printingLogService.viewAllPrintLog(startDate, endDate))
+        Pageable pageable = PageRequest.of(page, size);
+        return ApiResponse.<Page<AdminPrintingLogResponse>>builder()
+                .result(printingLogService.viewAllPrintLog(startDate, endDate, pageable))
                 .build();
     }
 
