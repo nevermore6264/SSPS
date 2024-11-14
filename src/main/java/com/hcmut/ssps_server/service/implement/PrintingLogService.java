@@ -6,6 +6,7 @@ import com.hcmut.ssps_server.dto.response.ReportItem;
 import com.hcmut.ssps_server.enums.Frequency;
 import com.hcmut.ssps_server.exception.AppException;
 import com.hcmut.ssps_server.exception.ErrorCode;
+import com.hcmut.ssps_server.model.Printer;
 import com.hcmut.ssps_server.model.Printing;
 import com.hcmut.ssps_server.model.PrintingLog;
 import com.hcmut.ssps_server.repository.PrintingLogRepository;
@@ -16,7 +17,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -25,6 +28,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -66,6 +70,8 @@ public class PrintingLogService implements IPrintingLogService {
      */
     @Override
     public AdminPrintingLogResponse viewPrintLog(Long printingLogId) {
+        printingLogRepository.findById(printingLogId)
+                .orElseThrow(() -> new AppException(ErrorCode.PRINTING_LOG_ID_NOT_FOUND));
         return printingLogRepository.viewPrintLog(printingLogId);
     }
 
