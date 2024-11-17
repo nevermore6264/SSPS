@@ -54,6 +54,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/admin/generate-usage-reports").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.POST, "/admin/view-print-logs").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.POST, "/ssps/students/upload").hasAuthority("ROLE_STUDENT")
+                        .requestMatchers(HttpMethod.POST, "/ssps/students/get-print-requests").hasAuthority("ROLE_STUDENT")
                         .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET, STUDENT_ENDPOINTS).hasAuthority("ROLE_STUDENT")
                         .requestMatchers(HttpMethod.GET, ADMIN_ENDPOINTS).hasAuthority("ROLE_ADMIN")
