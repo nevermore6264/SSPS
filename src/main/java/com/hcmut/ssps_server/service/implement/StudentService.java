@@ -2,15 +2,16 @@ package com.hcmut.ssps_server.service.implement;
 
 import com.hcmut.ssps_server.dto.request.StudentCreationRequest;
 import com.hcmut.ssps_server.dto.request.UploadConfigRequest;
+import com.hcmut.ssps_server.dto.response.PrintRequestPartResponse;
+import com.hcmut.ssps_server.dto.response.PrintRequestResponse;
 import com.hcmut.ssps_server.dto.response.PrintingLogResponse;
 import com.hcmut.ssps_server.dto.response.StudentResponse;
+import com.hcmut.ssps_server.enums.PrintableStatus;
 import com.hcmut.ssps_server.exception.AppException;
 import com.hcmut.ssps_server.exception.ErrorCode;
 import com.hcmut.ssps_server.mapper.StudentMapper;
 import com.hcmut.ssps_server.mapper.UserMapper;
 import com.hcmut.ssps_server.model.Document;
-import com.hcmut.ssps_server.enums.PrintableStatus;
-import com.hcmut.ssps_server.model.Printer;
 import com.hcmut.ssps_server.model.user.Student;
 import com.hcmut.ssps_server.model.user.User;
 import com.hcmut.ssps_server.repository.DocumentRepository;
@@ -19,7 +20,6 @@ import com.hcmut.ssps_server.repository.PrintingRepository;
 import com.hcmut.ssps_server.repository.UserRepository.StudentRepository;
 import com.hcmut.ssps_server.repository.UserRepository.UserRepository;
 import com.hcmut.ssps_server.service.interf.IStudentService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,9 +31,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -162,12 +163,40 @@ public class StudentService implements IStudentService {
 
     @Override
     public String confirm(Long printingId) {
-        try{
+        try {
             printingRepository.findById(printingId).orElseThrow(() -> new AppException(ErrorCode.PRINT_REQUEST_NOT_FOUND));
             printingRepository.deleteById(printingId);
             return "Receive document successfully";
-        } catch (Exception e){
+        } catch (Exception e) {
             return e.getMessage();
         }
+    }
+
+    @Override
+    public PrintRequestResponse getPrintRequests() {
+        var context = SecurityContextHolder.getContext();
+        String currentEmail = context.getAuthentication().getName();
+
+        // Kiểm tra sự tồn tại của email
+        studentRepository
+                .findByUser_Email(currentEmail)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        List<PrintRequestPartResponse> allPrints = printingRepository.viewPrintByCurrentEmail(currentEmail);
+
+        // Phân loại các bản in
+        List<PrintRequestPartResponse> pendingPrints = new ArrayList<>();
+        List<PrintRequestPartResponse> completedPrints = new ArrayList<>();
+
+        allPrints.forEach(print -> {
+            if (print.getExpiredTime() == null) {
+                pendingPrints.add(print);
+            } else {
+                completedPrints.add(print);
+            }
+        });
+
+        // Trả về DTO Response
+        return new PrintRequestResponse(pendingPrints, completedPrints);
     }
 }
